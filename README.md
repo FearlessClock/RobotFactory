@@ -14,6 +14,9 @@ compelled to do certain things.
 The Robo-monks go about their lives eating, drinking, sleeping and
 worshipping. During the day or while they are sleeping, the robots
 can have visions and dreams giving them a special task to do.
+2. The little robots are in a guild of sorts and the tasks 
+that the user can give the robots are in the form of missions/quests 
+on a mission board. 
 
 ### Technicalities.
 1. Each agent is independent. They have needs (e.i tamagochi.

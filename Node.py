@@ -1,0 +1,38 @@
+from pygame.math import Vector2
+from pygame.rect import Rect
+from pygame.sprite import Sprite
+
+
+class Node(Sprite):
+    """Node structure to represent the graph of the maze. Allows us to know a lot of information about the maze in one position"""
+
+    def __init__(self, pos: Vector2, wall: bool):
+        Sprite.__init__(self)
+        self.rect = Rect(pos.x, pos.y, 40, 40)
+        self.pos = pos
+        self.floor = 0
+        self.image = None
+        self.wall = wall
+        self.payload = 0
+        self.neighbors = []
+        self.parent = None
+        self.g = -1
+        self.f = -1
+
+    def setImage(self, Image):
+        self.image = Image
+
+    def addNeighbors(self, node):
+        self.neighbors.append(node)
+
+    def removeNeighbors(self, node):
+        self.neighbors.remove(node)
+
+    def getPayload(self):
+        return self.payload
+
+    def setPayload(self, val):
+        self.payload = val
+
+    def getNeighbors(self):
+        return self.neighbors

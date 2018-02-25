@@ -34,4 +34,10 @@ Hunger, sleep, etc) and ways to fulfill their needs.
 #### Independent Agent
 **Base Class:** Position, movement functions, task getting, drawing
 <br>
-**Each agent:** Movement style
+**Each agent:** Movement style <br>
+I want the movement to be free form but I don't want the creature to
+move in straight lines to the target. I will need some kind of path finding
+and so I will need so kind of graph in the levels. The level could have
+a grid overlaying it and then movement can be calculated from that. The
+agent will then have nodes that it has to move to making the movement
+calculated and smooth.

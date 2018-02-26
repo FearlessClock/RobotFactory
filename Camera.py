@@ -1,3 +1,5 @@
+import os
+
 import pygame
 from pygame.math import Vector2
 from pygame.rect import Rect
@@ -15,6 +17,7 @@ class Camera(pygame.sprite.Group):
         self.screenRect = Rect(0, 0, screenSize.x, screenSize.y)
         self.tileRect = Rect(0, 0, nmbrOfTilesOnScreen.x, nmbrOfTilesOnScreen.y)
         self.levelSize = Vector2(0, 0)
+        self.fontRenderer = pygame.font.Font(os.path.join("fonts", 'Millennium-Regular_0.ttf'), 18)
 
     def setPosition(self, x, y):
         """Set the position of the camera"""
@@ -52,6 +55,7 @@ class Camera(pygame.sprite.Group):
         for spr in sprites:
             rect = Rect(spr.rect.x - self.screenRect.x, spr.rect.y - self.screenRect.y, 0, 0)
             self.spritedict[spr] = surface_blit(spr.image, rect)
+            surface_blit(self.fontRenderer.render(str(spr.f), False, (0, 0, 0)), rect)
         if npcList is not None:
             for npc in npcList:
                 rect = Rect(npc.rect.x - self.screenRect.x, npc.rect.y - self.screenRect.y, 0, 0)

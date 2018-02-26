@@ -92,7 +92,7 @@ class Map:
                 value = int(fileRead[j])
                 isSolid = tileSignificanceDict.get(value)
                 node = Node(Vector2(j * tileLoader.tileSize.x, i * tileLoader.tileSize.y), isSolid)
-                node.setImage(tileLoader.getTileFromName("mapTiles", 0))
+                node.setImage(tileLoader.getTileFromName("mapTiles", value))
                 level[i].append(node)
                 if isSolid:
                     self.solidObjectGroup.add(node)
@@ -103,14 +103,14 @@ class Map:
 
         for i in range(width):
             for j in range(height):
-                if 0 < i + 1 < height:
+                if 0 < i + 1 < height and not level[j][i + 1].wall:
                     level[j][i].addNeighbors(level[j][i + 1])
-                if 0 < i - 1 < height:
+                if 0 < i - 1 < height and not level[j][i - 1].wall:
                     level[j][i].addNeighbors(level[j][i - 1])
-                if 0 < j + 1 < width:
-                    level[j][i].addNeighbors(level[j][j + 1])
-                if 0 < j - 1 < width:
-                    level[j][i].addNeighbors(level[j][j - 1])
+                if 0 < j + 1 < width and not level[j + 1][i].wall:
+                    level[j][i].addNeighbors(level[j + 1][i])
+                if 0 < j - 1 < width and not level[j - 1][i].wall:
+                    level[j][i].addNeighbors(level[j - 1][i])
 
         return level, width, height
 

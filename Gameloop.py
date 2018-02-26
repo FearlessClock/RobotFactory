@@ -3,6 +3,7 @@ import os
 import pygame
 from pygame.math import Vector2
 
+from AI import AI
 from Camera import Camera
 from MapHolder import MapHolder
 from Window import Window
@@ -24,6 +25,8 @@ class Gameloop:
         self.clock = pygame.time.Clock()
         self.deltaTime = 0
 
+        self.AICreature = AI(30, 30, self.window.tileLoader, self.tileSize)
+
     def getInputs(self):
         """Return the events corresponding to each button press"""
         events = pygame.event.get([pygame.KEYDOWN, pygame.KEYUP])
@@ -41,7 +44,8 @@ class Gameloop:
         # Game loop
         while pygame.display.get_init():
             self.deltaTime = self.clock.get_time()
-            self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None, None)
+            self.AICreature.moveToNode(self.mapHolder.getCurrentMap(), self.mapHolder.getCurrentMap().map[9][9])
+            self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None, [self.AICreature])
             self.handleEvents()
             pygame.event.pump()
 
@@ -50,4 +54,4 @@ class Gameloop:
             except:
                 print("Error")
 
-            self.clock.tick(60)
+            self.clock.tick(1)

@@ -36,3 +36,9 @@ class Node(Sprite):
 
     def getNeighbors(self):
         return self.neighbors
+
+    def equal(self, other):
+        return other.pos.x == self.pos.x and other.pos.y == self.pos.y
+
+    def __str__(self):
+        return "(" + self.pos.x + " : " + self.pos.y + ')'

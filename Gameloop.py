@@ -25,7 +25,10 @@ class Gameloop:
         self.clock = pygame.time.Clock()
         self.deltaTime = 0
 
-        self.AICreature = AI(60, 60, self.window.tileLoader, self.tileSize)
+        self.AICreature = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.AICreature1 = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.AICreature2 = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.AICreature3 = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
 
     def getInputs(self):
         """Return the events corresponding to each button press"""
@@ -45,7 +48,12 @@ class Gameloop:
         while pygame.display.get_init():
             self.deltaTime = self.clock.get_time()
             self.AICreature.Update(self.mapHolder.getCurrentMap())
-            self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None, [self.AICreature])
+            # self.AICreature1.Update(self.mapHolder.getCurrentMap())
+            # self.AICreature2.Update(self.mapHolder.getCurrentMap())
+            # self.AICreature3.Update(self.mapHolder.getCurrentMap())
+
+            self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None,
+                             [self.AICreature, self.AICreature1, self.AICreature2, self.AICreature3])
             self.handleEvents()
             pygame.event.pump()
 

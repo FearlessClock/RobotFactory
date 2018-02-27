@@ -1,10 +1,17 @@
 import math
+from enum import Enum
+from random import random
 
 from pygame.math import Vector2
 
 from Creature import Creature
 from Map import Map
 from Node import Node
+
+
+class AIStates(Enum):
+    ROAMING = 1
+    GOINGTO = 2
 
 
 def distanceToNode(start: Node, goal, tileSize):
@@ -38,8 +45,10 @@ class AI(Creature):
         self.path = []
         self.tileSize = tileSize
         self.target = self.pos
+        self.roamNode = None
         self.movingTo = False
         self.zoneToGoTo = 0
+        self.state = AIStates.ROAMING
 
     def setPos(self, pos):
         self.pos = pos
@@ -52,11 +61,34 @@ class AI(Creature):
         self.rect.y = self.pos.y
 
     def Update(self, level: Map):
-        if not self.movingTo:
-            self.zoneToGoTo += 1
-            if self.zoneToGoTo > len(level.zoneOfInterest) - 1:
-                self.zoneToGoTo = 0
-        self.moveToNode(level, level.zoneOfInterest[self.zoneToGoTo].node)
+        if self.state == AIStates.ROAMING:
+            if not self.movingTo:
+                angle = random() * 360
+                radius = random() * 6
+
+                x = int(self.pos.x / self.tileSize.x + radius * math.cos(math.radians(angle)))  # random() * level.width
+                y = int(
+                    self.pos.y / self.tileSize.y + radius * math.sin(math.radians(angle)))  # random() * level.height
+
+                if x >= level.width:
+                    x = level.width - 1
+                elif x < 0:
+                    x = 0
+
+                if y >= level.height:
+                    y = level.height - 1
+                elif y < 0:
+                    y = 0
+
+                self.roamNode = level.getTileAt(Vector2(x, y))
+            self.moveToNode(level, self.roamNode)
+
+        elif self.state == AIStates.GOINGTO:
+            if not self.movingTo:
+                self.zoneToGoTo += 1
+                if self.zoneToGoTo > len(level.zoneOfInterest) - 1:
+                    self.zoneToGoTo = 0
+            self.moveToNode(level, level.zoneOfInterest[self.zoneToGoTo].node)
 
     def moveToNode(self, level, goal):
         """If no path is known, find a new one otherwise continue on this path"""
@@ -67,7 +99,6 @@ class AI(Creature):
                                    goal)
         if len(self.path) > 0:
             dis = self.pos.distance_squared_to(self.target)
-            print(dis)
             if dis < 2:
                 self.target = self.path.pop().pos
             self.setPosLerp(self.target)
@@ -75,6 +106,9 @@ class AI(Creature):
                 self.movingTo = False
 
     def aStar(self, level: Map, start, goal):
+        if start.equal(goal):
+            self.movingTo = False
+            return []
         """Reset all the maze information"""
         for i in range(level.getWidth()):
             for j in range(level.getHeight()):
@@ -128,4 +162,5 @@ class AI(Creature):
                 curNeigh.floor = 255
 
         print("Error No path found")
+        self.movingTo = False
         return []

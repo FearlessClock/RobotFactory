@@ -18,14 +18,14 @@ class Gameloop:
 
         self.font_renderer = pygame.font.Font(os.path.join("fonts", 'Millennium-Regular_0.ttf'), 24)
         self.window = Window(self.screenSize, "Robot Clergy", self.tileSize, self.font_renderer)
-        self.camera = Camera(Vector2(10, 10), self.tileSize, self.screenSize)
+        self.camera = Camera(Vector2(15, 15), self.tileSize, self.screenSize)
         self.mapHolder = MapHolder(["map1"], self.tileSize, self.window.tileLoader)
 
         # Timing and delta time stuff
         self.clock = pygame.time.Clock()
         self.deltaTime = 0
 
-        self.AICreature = AI(30, 30, self.window.tileLoader, self.tileSize)
+        self.AICreature = AI(60, 60, self.window.tileLoader, self.tileSize)
 
     def getInputs(self):
         """Return the events corresponding to each button press"""
@@ -44,7 +44,7 @@ class Gameloop:
         # Game loop
         while pygame.display.get_init():
             self.deltaTime = self.clock.get_time()
-            self.AICreature.moveToNode(self.mapHolder.getCurrentMap(), self.mapHolder.getCurrentMap().map[9][9])
+            self.AICreature.Update(self.mapHolder.getCurrentMap())
             self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None, [self.AICreature])
             self.handleEvents()
             pygame.event.pump()
@@ -54,4 +54,4 @@ class Gameloop:
             except:
                 print("Error")
 
-            self.clock.tick(1)
+            self.clock.tick(60)

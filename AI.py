@@ -18,7 +18,7 @@ def getManhattenDistance(start: Node, goal: Node, tileSize):
 
 
 def GetHScore(curNeigh, goal, tileSize):
-    return getManhattenDistance(curNeigh, goal, tileSize)
+    return distanceToNode(curNeigh, goal, tileSize)
 
 
 def reconstructPath(node):
@@ -37,20 +37,42 @@ class AI(Creature):
         self.pos = Vector2(x, y)
         self.path = []
         self.tileSize = tileSize
+        self.target = self.pos
+        self.movingTo = False
+        self.zoneToGoTo = 0
 
     def setPos(self, pos):
         self.pos = pos
         self.rect.x = pos.x
         self.rect.y = pos.y
 
+    def setPosLerp(self, pos):
+        self.pos = self.pos.lerp(pos, 0.2)
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
+
+    def Update(self, level: Map):
+        if not self.movingTo:
+            self.zoneToGoTo += 1
+            if self.zoneToGoTo > len(level.zoneOfInterest) - 1:
+                self.zoneToGoTo = 0
+        self.moveToNode(level, level.zoneOfInterest[self.zoneToGoTo].node)
+
     def moveToNode(self, level, goal):
         """If no path is known, find a new one otherwise continue on this path"""
-        if len(self.path) == 0:
+        if not self.movingTo:
+            self.movingTo = True
             self.path = self.aStar(level,
-                                   level.map[int(self.pos.x / self.tileSize.x)][int(self.pos.y / self.tileSize.y)],
+                                   level.map[int(self.pos.y / self.tileSize.y)][int(self.pos.x / self.tileSize.x)],
                                    goal)
         if len(self.path) > 0:
-            self.setPos(self.path.pop().pos)
+            dis = self.pos.distance_squared_to(self.target)
+            print(dis)
+            if dis < 2:
+                self.target = self.path.pop().pos
+            self.setPosLerp(self.target)
+            if len(self.path) == 0:
+                self.movingTo = False
 
     def aStar(self, level: Map, start, goal):
         """Reset all the maze information"""

@@ -1,8 +1,10 @@
+import json
 import os
 
 import pygame
 from pygame.math import Vector2
 
+from Collection.PointOfInterest import PointOfInterest
 from Node import Node
 
 
@@ -19,6 +21,8 @@ class Map:
         self.notSolidObjectGroup = pygame.sprite.Group()
         # Used to show the correct blocks on screen
         self.cameraViewGroup = pygame.sprite.Group()
+
+        self.zoneOfInterest = []
 
         self.map, self.width, self.height = self.readMap("maps", mapName, tileLoader, "mapTiles",
                                                          {0: False, 1: True, 2: False, 3: True, 4: True})
@@ -60,6 +64,9 @@ class Map:
         if self.map[int(y)][int(x)].solid:
             return True
         return False
+
+    def addZoneOfInterest(self, pos, name, node):
+        self.zoneOfInterest.append(PointOfInterest(pos, name, node))
 
     def readMap(self, filelocation, mapName, tileLoader, spriteSheetName, tileSignificanceDict):
         """Return:
@@ -112,6 +119,14 @@ class Map:
                 if 0 < j - 1 < width and not level[j - 1][i].wall:
                     level[j][i].addNeighbors(level[j - 1][i])
 
+        file = open(os.path.join("data", "PointsOfInterest.json"), 'r')
+        parsedJson = json.loads(file.read())
+        positions = parsedJson["points"]
+        for interest in positions:
+            pos = Vector2(int(interest["pos"]["x"]), int(interest["pos"]["y"]))
+            self.addZoneOfInterest(pos, interest["name"], level[int(pos.y)][int(pos.x)])
+            level[int(interest["pos"]["y"])][int(interest["pos"]["x"])].image = tileLoader.getTileFromName("mapTiles",
+                                                                                                           4)
         return level, width, height
 
     def draw(self, surface):

@@ -44,3 +44,9 @@ and so I will need so kind of graph in the levels. The level could have
 a grid overlaying it and then movement can be calculated from that. The
 agent will then have nodes that it has to move to making the movement
 calculated and smooth.
+
+**Agent brain:** Each agent will have a brain consisting of a Finite
+State Machine (FSM) A finite state machine is a design pattern that uses
+a finite number of states to represent the different states the agent can
+be in and defines transitions between the different states. Each state
+has its own set of functions. The state also handles the transitions.

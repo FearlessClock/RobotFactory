@@ -1,9 +1,12 @@
 import math
+from builtins import int
 from enum import Enum
 from random import random
 
 from pygame.math import Vector2
 
+from Brains.FSM import FSM
+from ClergyRobotClasses.ClergyRobotNeeds import Needs
 from Creature import Creature
 from Map import Map
 from Node import Node
@@ -12,6 +15,7 @@ from Node import Node
 class AIStates(Enum):
     ROAMING = 1
     GOINGTO = 2
+    AT = 3
 
 
 def distanceToNode(start: Node, goal, tileSize):
@@ -36,7 +40,7 @@ def reconstructPath(node):
     return path
 
 
-class AI(Creature):
+class ClergyRobot(Creature):
     """"Structure to store the AI information and to make the AI move intelligently """
 
     def __init__(self, x, y, tileLoader, tileSize):
@@ -50,6 +54,18 @@ class AI(Creature):
         self.zoneToGoTo = 0
         self.state = AIStates.ROAMING
 
+        # Creature stats, used in the tamgotchi life thing
+        self.needs = Needs()
+        self.brain = FSM()
+        self.brain.pushState(self.roaming)
+
+        # Flags for FSM stuff
+        self.foundFood = None
+        self.foundBed = None
+
+        self.time = 0
+
+
     def setPos(self, pos):
         self.pos = pos
         self.rect.x = pos.x
@@ -60,52 +76,120 @@ class AI(Creature):
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
 
-    def Update(self, level: Map):
-        if self.state == AIStates.ROAMING:
-            if not self.movingTo:
-                angle = random() * 360
-                radius = random() * 6
+    def Update(self, level: Map, dt: int):
+        self.time += dt
+        if self.time > 100:
+            self.time = 0
+            self.needs.stepNeeds()
+        self.brain.update(level)
 
-                x = int(self.pos.x / self.tileSize.x + radius * math.cos(math.radians(angle)))  # random() * level.width
-                y = int(
-                    self.pos.y / self.tileSize.y + radius * math.sin(math.radians(angle)))  # random() * level.height
-
-                if x >= level.width:
-                    x = level.width - 1
-                elif x < 0:
-                    x = 0
-
-                if y >= level.height:
-                    y = level.height - 1
-                elif y < 0:
-                    y = 0
-
-                self.roamNode = level.getTileAt(Vector2(x, y))
-            self.moveToNode(level, self.roamNode)
-
-        elif self.state == AIStates.GOINGTO:
-            if not self.movingTo:
-                self.zoneToGoTo += 1
-                if self.zoneToGoTo > len(level.zoneOfInterest) - 1:
-                    self.zoneToGoTo = 0
-            self.moveToNode(level, level.zoneOfInterest[self.zoneToGoTo].node)
-
-    def moveToNode(self, level, goal):
+    def moveToNode(self, level: Map, goal: Node):
         """If no path is known, find a new one otherwise continue on this path"""
         if not self.movingTo:
             self.movingTo = True
             self.path = self.aStar(level,
                                    level.map[int(self.pos.y / self.tileSize.y)][int(self.pos.x / self.tileSize.x)],
                                    goal)
-        if len(self.path) > 0:
+        if len(self.path) >= 0:
             dis = self.pos.distance_squared_to(self.target)
-            if dis < 2:
+            if dis < 2 and len(self.path) > 0:
                 self.target = self.path.pop().pos
             self.setPosLerp(self.target)
-            if len(self.path) == 0:
+            if len(self.path) == 0 and dis < 1:
                 self.movingTo = False
 
-    def aStar(self, level: Map, start, goal):
+    """Brain state functions"""
+
+    def roaming(self, level):
+        """Free roaming state"""
+        """Check trigger functions"""
+        if self.needs.hunger < 30:
+            self.brain.pushState(self.hungry)
+            self.movingTo = False
+        elif self.needs.sleep < 40:
+            self.brain.pushState(self.tired)
+            self.movingTo = False
+
+        """Resolve the state"""
+        if not self.movingTo:
+            angle = random() * 360
+            radius = random() * 6
+
+            x = int(self.pos.x / self.tileSize.x + radius * math.cos(math.radians(angle)))  # random() * level.width
+            y = int(self.pos.y / self.tileSize.y + radius * math.sin(math.radians(angle)))  # random() * level.height
+
+            if x >= level.width:
+                x = level.width - 1
+            elif x < 0:
+                x = 0
+
+            if y >= level.height:
+                y = level.height - 1
+            elif y < 0:
+                y = 0
+
+            self.roamNode = level.getTileAt(Vector2(x, y))
+        self.moveToNode(level, self.roamNode)
+
+    def hungry(self, level):
+        """Hungry state"""
+        if self.needs.hunger > 100:
+            self.brain.popState()
+            self.foundFood = None
+        else:
+            if self.foundFood is not None:
+                pos = Vector2(self.pos.x / self.tileSize.x, self.pos.y / self.tileSize.y)
+                distanceToFood = self.foundFood.distance_to(pos)
+                if distanceToFood < 1:
+                    self.eatFood()
+                else:
+                    self.moveToNode(level, level.getTileAt(self.foundFood))
+            else:
+                foodLocations = level.getFood()
+                if len(foodLocations) > 0:
+                    if len(foodLocations) == 1:
+                        self.foundFood = foodLocations[0]
+                    else:
+                        closest = foodLocations[0].distance_squared_to(self.pos)
+                        index = 0
+                        for i in range(1, foodLocations):
+                            dis = foodLocations[i].distance_squared_to(self.pos)
+                            if dis < closest:
+                                closest = dis
+                                index = i
+                        self.foundFood = foodLocations[index]
+                else:
+                    print("There is no food! You will die!")
+            # Get distance to food
+
+    def tired(self, level):
+        """Tired state"""
+        if self.needs.sleep > 70:
+            self.brain.popState()
+        else:
+            self.sleep()
+
+    """Roaming functions"""
+
+    """Hungry functions"""
+
+    def findFood(self):
+        print("Clergy Brain: Find Food")
+
+    def eatFood(self):
+        print("Clergy Brain: Eat Food")
+        self.needs.hunger += 1
+
+    """Tired functions"""
+
+    def findBed(self):
+        print("Clergy Brain: Find bed")
+
+    def sleep(self):
+        print("Clergy Brain: Sleep")
+        self.needs.sleep += 1
+
+    def aStar(self, level: Map, start: Node, goal: Node):
         if start.equal(goal):
             self.movingTo = False
             return []

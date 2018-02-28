@@ -3,7 +3,7 @@ import os
 import pygame
 from pygame.math import Vector2
 
-from AI import AI
+from ClergyRobot import ClergyRobot
 from Camera import Camera
 from MapHolder import MapHolder
 from Window import Window
@@ -25,10 +25,10 @@ class Gameloop:
         self.clock = pygame.time.Clock()
         self.deltaTime = 0
 
-        self.AICreature = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
-        self.AICreature1 = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
-        self.AICreature2 = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
-        self.AICreature3 = AI(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.AICreature = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.AICreature1 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.AICreature2 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.AICreature3 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
 
     def getInputs(self):
         """Return the events corresponding to each button press"""
@@ -47,7 +47,7 @@ class Gameloop:
         # Game loop
         while pygame.display.get_init():
             self.deltaTime = self.clock.get_time()
-            self.AICreature.Update(self.mapHolder.getCurrentMap())
+            self.AICreature.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
             # self.AICreature1.Update(self.mapHolder.getCurrentMap())
             # self.AICreature2.Update(self.mapHolder.getCurrentMap())
             # self.AICreature3.Update(self.mapHolder.getCurrentMap())

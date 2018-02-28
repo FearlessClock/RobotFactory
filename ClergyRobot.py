@@ -5,7 +5,7 @@ from random import random
 
 from pygame.math import Vector2
 
-from Brains.FSM import FSM
+from Brain.FSM import FSM
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
 from Creature import Creature
 from Map import Map

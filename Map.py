@@ -68,6 +68,12 @@ class Map:
     def addZoneOfInterest(self, pos, name, node):
         self.zoneOfInterest.append(PointOfInterest(pos, name, node))
 
+    def getFood(self):
+        return [self.zoneOfInterest[0].pos]
+
+    def getBed(self):
+        return [self.zoneOfInterest[1].pos]
+
     def readMap(self, filelocation, mapName, tileLoader, spriteSheetName, tileSignificanceDict):
         """Return:
                 Tile size, level size and the level

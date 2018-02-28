@@ -17,7 +17,10 @@ class Camera(pygame.sprite.Group):
         self.screenRect = Rect(0, 0, screenSize.x, screenSize.y)
         self.tileRect = Rect(0, 0, nmbrOfTilesOnScreen.x, nmbrOfTilesOnScreen.y)
         self.levelSize = Vector2(0, 0)
-        self.fontRenderer = pygame.font.Font(os.path.join("fonts", 'Millennium-Regular_0.ttf'), 18)
+        self.fontRendererBig = pygame.font.Font(os.path.join("fonts", 'Millennium-Regular_0.ttf'), 18)
+        self.fontRendererMedium = pygame.font.Font(os.path.join("fonts", 'Millennium-Regular_0.ttf'), 12)
+        self.fontRendererSmall = pygame.font.Font(os.path.join("fonts", 'Millennium-Regular_0.ttf'), 8)
+
 
     def setPosition(self, x, y):
         """Set the position of the camera"""
@@ -55,11 +58,19 @@ class Camera(pygame.sprite.Group):
         for spr in sprites:
             rect = Rect(spr.rect.x - self.screenRect.x, spr.rect.y - self.screenRect.y, 0, 0)
             self.spritedict[spr] = surface_blit(spr.image, rect)
-            surface_blit(self.fontRenderer.render(str(spr.f), False, (0, 0, 0)), rect)
+            surface_blit(self.fontRendererMedium.render(str(spr.f), False, (0, 0, 0)), rect)
         if npcList is not None:
             for npc in npcList:
                 rect = Rect(npc.rect.x - self.screenRect.x, npc.rect.y - self.screenRect.y, 0, 0)
                 surface_blit(npc.image, rect)
+                surface_blit(self.fontRendererBig.render("H:" + str(npc.needs.hunger), False, (0, 0, 0)), rect)
+                # rect.y += self.fontRendererMedium.size("P")[1]
+                # surface_blit(self.fontRendererMedium.render(str(npc.needs.thirst), False, (0, 0, 0)), rect)
+                rect.y += self.fontRendererBig.size("P")[1] - 6
+                surface_blit(self.fontRendererBig.render("S:" + str(npc.needs.sleep), False, (0, 0, 0)), rect)
+                # rect.y += self.fontRendererMedium.size("P")[1]
+                # surface_blit(self.fontRendererMedium.render(str(npc.needs.boredom), False, (0, 0, 0)), rect)
+
         if player is not None:
             rect = Rect(player.rect)
             rect.x -= self.screenRect.x

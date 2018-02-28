@@ -162,12 +162,34 @@ class ClergyRobot(Creature):
                     print("There is no food! You will die!")
             # Get distance to food
 
-    def tired(self, level):
+    def tired(self, level: Map):
         """Tired state"""
         if self.needs.sleep > 70:
             self.brain.popState()
         else:
-            self.sleep()
+            if self.foundBed is not None:
+                pos = Vector2(self.pos.x / self.tileSize.x, self.pos.y / self.tileSize.y)
+                distanceToBed = self.foundBed.distance_to(pos)
+                if distanceToBed < 1:
+                    self.sleep()
+                else:
+                    self.moveToNode(level, level.getTileAt(self.foundBed))
+            else:
+                bedLocations = level.getBed()
+                if len(bedLocations) > 0:
+                    if len(bedLocations) == 1:
+                        self.foundBed = bedLocations[0]
+                    else:
+                        closest = bedLocations[0].distance_squared_to(self.pos)
+                        index = 0
+                        for i in range(1, bedLocations):
+                            dis = bedLocations[i].distance_squared_to(self.pos)
+                            if dis < closest:
+                                closest = dis
+                                index = i
+                        self.foundBed = bedLocations[index]
+                else:
+                    print("There is no food! You will die!")
 
     """Roaming functions"""
 

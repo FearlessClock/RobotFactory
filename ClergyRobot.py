@@ -7,6 +7,7 @@ from pygame.math import Vector2
 
 from Brain.FSM import FSM
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
+from Collection.PointOfInterest import PointOfInterest
 from Creature import Creature
 from Map import Map
 from Node import Node
@@ -52,7 +53,8 @@ class ClergyRobot(Creature):
         self.roamNode = None
         self.movingTo = False
         self.zoneToGoTo = 0
-        self.state = AIStates.ROAMING
+
+        self.speed = 3
 
         # Creature stats, used in the tamgotchi life thing
         self.needs = Needs()
@@ -60,11 +62,10 @@ class ClergyRobot(Creature):
         self.brain.pushState(self.roaming)
 
         # Flags for FSM stuff
-        self.foundFood = None
-        self.foundBed = None
+        self.foundFoodPOI: PointOfInterest = None
+        self.foundBedPOI: PointOfInterest = None
 
         self.time = 0
-
 
     def setPos(self, pos):
         self.pos = pos
@@ -76,9 +77,19 @@ class ClergyRobot(Creature):
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
 
+    def setPosNorm(self, pos: Vector2):
+        vecDis: Vector2 = pos - self.pos
+        length = vecDis.length_squared()
+        if not length == 0:
+            vecDis.normalize_ip()
+        self.pos += vecDis * self.speed
+
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
+
     def Update(self, level: Map, dt: int):
         self.time += dt
-        if self.time > 100:
+        if self.time > 300:
             self.time = 0
             self.needs.stepNeeds()
         self.brain.update(level)
@@ -92,10 +103,10 @@ class ClergyRobot(Creature):
                                    goal)
         if len(self.path) >= 0:
             dis = self.pos.distance_squared_to(self.target)
-            if dis < 2 and len(self.path) > 0:
+            if dis < 5 and len(self.path) > 0:
                 self.target = self.path.pop().pos
-            self.setPosLerp(self.target)
-            if len(self.path) == 0 and dis < 1:
+            self.setPosNorm(self.target)
+            if len(self.path) == 0 and dis < 2:
                 self.movingTo = False
 
     """Brain state functions"""
@@ -135,31 +146,17 @@ class ClergyRobot(Creature):
         """Hungry state"""
         if self.needs.hunger > 100:
             self.brain.popState()
-            self.foundFood = None
+            self.foundFoodPOI = None
         else:
-            if self.foundFood is not None:
+            if self.foundFoodPOI is not None:
                 pos = Vector2(self.pos.x / self.tileSize.x, self.pos.y / self.tileSize.y)
-                distanceToFood = self.foundFood.distance_to(pos)
+                distanceToFood = self.foundFoodPOI.pos.distance_to(pos)
                 if distanceToFood < 1:
                     self.eatFood()
                 else:
-                    self.moveToNode(level, level.getTileAt(self.foundFood))
+                    self.moveToNode(level, level.getTileAt(self.foundFoodPOI.pos))
             else:
-                foodLocations = level.getFood()
-                if len(foodLocations) > 0:
-                    if len(foodLocations) == 1:
-                        self.foundFood = foodLocations[0]
-                    else:
-                        closest = foodLocations[0].distance_squared_to(self.pos)
-                        index = 0
-                        for i in range(1, foodLocations):
-                            dis = foodLocations[i].distance_squared_to(self.pos)
-                            if dis < closest:
-                                closest = dis
-                                index = i
-                        self.foundFood = foodLocations[index]
-                else:
-                    print("There is no food! You will die!")
+                self.findFood(level)
             # Get distance to food
 
     def tired(self, level: Map):
@@ -167,36 +164,37 @@ class ClergyRobot(Creature):
         if self.needs.sleep > 70:
             self.brain.popState()
         else:
-            if self.foundBed is not None:
+            if self.foundBedPOI is not None:
                 pos = Vector2(self.pos.x / self.tileSize.x, self.pos.y / self.tileSize.y)
-                distanceToBed = self.foundBed.distance_to(pos)
+                distanceToBed = self.foundBedPOI.pos.distance_to(pos)
                 if distanceToBed < 1:
                     self.sleep()
                 else:
-                    self.moveToNode(level, level.getTileAt(self.foundBed))
+                    self.moveToNode(level, level.getTileAt(self.foundBedPOI.pos))
             else:
-                bedLocations = level.getBed()
-                if len(bedLocations) > 0:
-                    if len(bedLocations) == 1:
-                        self.foundBed = bedLocations[0]
-                    else:
-                        closest = bedLocations[0].distance_squared_to(self.pos)
-                        index = 0
-                        for i in range(1, bedLocations):
-                            dis = bedLocations[i].distance_squared_to(self.pos)
-                            if dis < closest:
-                                closest = dis
-                                index = i
-                        self.foundBed = bedLocations[index]
-                else:
-                    print("There is no food! You will die!")
+                self.findBed(level)
 
     """Roaming functions"""
 
     """Hungry functions"""
 
-    def findFood(self):
+    def findFood(self, level):
         print("Clergy Brain: Find Food")
+        foodLocations = level.getFoodZones(self.pos)
+        if foodLocations is not None and len(foodLocations) > 0:
+            if len(foodLocations) == 1:
+                self.foundFoodPOI = foodLocations[0]
+            else:
+                closest = foodLocations[0].pos.distance_squared_to(self.pos)
+                index = 0
+                for i in range(1, len(foodLocations)):
+                    dis = foodLocations[i].pos.distance_squared_to(self.pos)
+                    if dis < closest:
+                        closest = dis
+                        index = i
+                self.foundFoodPOI = foodLocations[index]
+        else:
+            print("There is no food! You will die!")
 
     def eatFood(self):
         print("Clergy Brain: Eat Food")
@@ -204,8 +202,23 @@ class ClergyRobot(Creature):
 
     """Tired functions"""
 
-    def findBed(self):
+    def findBed(self, level):
         print("Clergy Brain: Find bed")
+        bedLocations = level.getBedZones(self.pos)
+        if bedLocations is not None and len(bedLocations) > 0:
+            if len(bedLocations) == 1:
+                self.foundBedPOI = bedLocations[0]
+            else:
+                closest = bedLocations[0].pos.distance_squared_to(self.pos)
+                index = 0
+                for i in range(1, len(bedLocations)):
+                    dis = bedLocations[i].pos.distance_squared_to(self.pos)
+                    if dis < closest:
+                        closest = dis
+                        index = i
+                self.foundBedPOI = bedLocations[index]
+        else:
+            print("There is no food! You will die!")
 
     def sleep(self):
         print("Clergy Brain: Sleep")

@@ -38,13 +38,15 @@ Hunger, sleep, etc) and ways to fulfill their needs.
 **Base Class:** Position, movement functions, task getting, drawing
 <br>
 **Each agent:** Movement style <br>
-<img src="https://github.com/FearlessClock/RobotFactory/raw/master/docs/Movement%20and%20brain.gif" alt="" width="200" height="200"><br>
+<img src="https://github.com/FearlessClock/RobotFactory/raw/master/docs/Movement%20and%20brain.gif" alt="" width="300" height="300"><br>
 I want the movement to be free form but I don't want the creature to
 move in straight lines to the target. I will need some kind of path finding
 and so I will need so kind of graph in the levels. The level could have
 a grid overlaying it and then movement can be calculated from that. The
 agent will then have nodes that it has to move to making the movement
 calculated and smooth.
+The movement is done by taking the normalized vector between the target
+and the position of the agent.
 
 **Agent brain:** Each agent will have a brain consisting of a Finite
 State Machine (FSM) A finite state machine is a design pattern that uses

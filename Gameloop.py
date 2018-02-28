@@ -48,9 +48,9 @@ class Gameloop:
         while pygame.display.get_init():
             self.deltaTime = self.clock.get_time()
             self.AICreature.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
-            # self.AICreature1.Update(self.mapHolder.getCurrentMap())
-            # self.AICreature2.Update(self.mapHolder.getCurrentMap())
-            # self.AICreature3.Update(self.mapHolder.getCurrentMap())
+            self.AICreature1.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            self.AICreature2.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            self.AICreature3.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
 
             self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None,
                              [self.AICreature, self.AICreature1, self.AICreature2, self.AICreature3])

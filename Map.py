@@ -23,6 +23,9 @@ class Map:
         self.cameraViewGroup = pygame.sprite.Group()
 
         self.zoneOfInterest = []
+        self.beds = []
+        self.food = []
+        self.alters = []
 
         self.map, self.width, self.height = self.readMap("maps", mapName, tileLoader, "mapTiles",
                                                          {0: False, 1: True, 2: False, 3: True, 4: True})
@@ -65,14 +68,49 @@ class Map:
             return True
         return False
 
-    def addZoneOfInterest(self, pos, name, node):
-        self.zoneOfInterest.append(PointOfInterest(pos, name, node))
+    def addZoneOfInterest(self, pos, name, node, interestType):
+        self.zoneOfInterest.append(PointOfInterest(pos, name, node, interestType))
 
-    def getFood(self):
-        return [self.zoneOfInterest[0].pos]
+    def addFoodZone(self, pos, name, node):
+        self.food.append(PointOfInterest(pos, name, node, 2))
 
-    def getBed(self):
-        return [self.zoneOfInterest[1].pos]
+    def addAlterZone(self, pos, name, node):
+        self.alters.append(PointOfInterest(pos, name, node, 0))
+
+    def addBedZone(self, pos, name, node):
+        self.beds.append(PointOfInterest(pos, name, node, 1))
+
+    def getBedZones(self, pos: Vector2):
+        return self.beds
+
+    def getFoodZones(self, pos: Vector2):
+        return self.food
+
+    def getNearestFood(self, pos: Vector2):
+        if len(self.food) > 0:
+            pos = Vector2(pos.x/self.tileSize.x, pos.y/self.tileSize.y)
+            closest = pos.distance_squared_to(self.food[0].pos)
+            poi = self.food[0]
+            for PoI in self.food:
+                dis = pos.distance_squared_to(PoI.pos)
+                if closest > dis:
+                    closest = dis
+                    poi = PoI
+            return poi
+        return None
+
+    def getNearestBed(self, pos: Vector2):
+        if len(self.beds) > 0:
+            pos = Vector2(pos.x / self.tileSize.x, pos.y / self.tileSize.y)
+            closest = pos.distance_squared_to(self.beds[0].pos)
+            poi = self.beds[0]
+            for PoI in self.beds:
+                dis = pos.distance_squared_to(PoI.pos)
+                if closest > dis:
+                    closest = dis
+                    poi = PoI
+            return poi
+        return None
 
     def readMap(self, filelocation, mapName, tileLoader, spriteSheetName, tileSignificanceDict):
         """Return:
@@ -130,7 +168,13 @@ class Map:
         positions = parsedJson["points"]
         for interest in positions:
             pos = Vector2(int(interest["pos"]["x"]), int(interest["pos"]["y"]))
-            self.addZoneOfInterest(pos, interest["name"], level[int(pos.y)][int(pos.x)])
+            self.addZoneOfInterest(pos, interest["name"], level[int(pos.y)][int(pos.x)], interest["type"])
+            if interest["type"] == 0:
+                self.addAlterZone(pos, interest["name"], level[int(pos.y)][int(pos.x)])
+            if interest["type"] == 1:
+                self.addBedZone(pos, interest["name"], level[int(pos.y)][int(pos.x)])
+            if interest["type"] == 2:
+                self.addFoodZone(pos, interest["name"], level[int(pos.y)][int(pos.x)])
             level[int(interest["pos"]["y"])][int(interest["pos"]["x"])].image = tileLoader.getTileFromName("mapTiles",
                                                                                                            4)
         return level, width, height

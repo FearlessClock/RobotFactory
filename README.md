@@ -38,6 +38,7 @@ Hunger, sleep, etc) and ways to fulfill their needs.
 **Base Class:** Position, movement functions, task getting, drawing
 <br>
 **Each agent:** Movement style <br>
+![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)<br>
 I want the movement to be free form but I don't want the creature to
 move in straight lines to the target. I will need some kind of path finding
 and so I will need so kind of graph in the levels. The level could have

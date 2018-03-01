@@ -1,8 +1,12 @@
 import os
+from typing import List
 
 import pygame
 from pygame.math import Vector2
 from pygame.rect import Rect
+
+from ClergyRobot import ClergyRobot
+from Map import Map
 
 
 class Camera(pygame.sprite.Group):
@@ -44,7 +48,7 @@ class Camera(pygame.sprite.Group):
         self.screenRect.y = min(max(0, (self.levelSize.y * self.tileSize.y - self.screenRect.height)),
                                 self.screenRect.y)
 
-    def draw(self, surface, level, player, npcList):
+    def drawScreen(self, surface, level: Map, player, npcList):
         """Draw the player, creatures and tiles with the camera movement"""
         if player is not None:
             self.MoveCameraToPlayerLocation(player.rect)
@@ -54,28 +58,42 @@ class Camera(pygame.sprite.Group):
 
         sprites = self.sprites()
         surface_blit = surface.blit
+        rect = Rect(0, 0, 0, 0)
         # Move every sprite so as to be well placed with the camera
-        for spr in sprites:
-            rect = Rect(spr.rect.x - self.screenRect.x, spr.rect.y - self.screenRect.y, 0, 0)
-            self.spritedict[spr] = surface_blit(spr.image, rect)
-            surface_blit(self.fontRendererMedium.render(str(spr.f), False, (0, 0, 0)), rect)
-        if npcList is not None:
-            for npc in npcList:
-                rect = Rect(npc.rect.x - self.screenRect.x, npc.rect.y - self.screenRect.y, 0, 0)
-                surface_blit(npc.image, rect)
-                surface_blit(self.fontRendererBig.render("H:" + str(npc.needs.hunger), False, (0, 0, 0)), rect)
-                # rect.y += self.fontRendererMedium.size("P")[1]
-                # surface_blit(self.fontRendererMedium.render(str(npc.needs.thirst), False, (0, 0, 0)), rect)
-                rect.y += self.fontRendererBig.size("P")[1] - 6
-                surface_blit(self.fontRendererBig.render("S:" + str(npc.needs.sleep), False, (0, 0, 0)), rect)
-                # rect.y += self.fontRendererMedium.size("P")[1]
-                # surface_blit(self.fontRendererMedium.render(str(npc.needs.boredom), False, (0, 0, 0)), rect)
+        self.drawMap(surface_blit, sprites)
+        self.drawSprites(surface_blit, npcList)
 
         if player is not None:
             rect = Rect(player.rect)
             rect.x -= self.screenRect.x
             rect.y -= self.screenRect.y
-            player.net.draw(surface_blit, self.screenRect)
+            player.net.drawScreen(surface_blit, self.screenRect)
             surface_blit(player.image, rect)
 
+        # Draw debug info to screen
+        rect.x = 0
+        rect.y = 13
+        surface_blit(self.fontRendererMedium.render("Nmbr Of tasks: " + str(len(npcList[0].taskList.listOfTasks)), False, (0, 0, 0)), rect)
+
         self.lostsprites = []
+
+    def drawSprites(self, surface_blit, AI):
+        if AI is not None:
+            for npc in AI:
+                rect = Rect(npc.rect.x - self.screenRect.x, npc.rect.y - self.screenRect.y, 0, 0)
+                surface_blit(npc.image, rect)
+                surface_blit(self.fontRendererSmall.render("H:" + str(npc.needs.hunger), False, (0, 0, 0)), rect)
+                # rect.y += self.fontRendererMedium.size("P")[1]
+                # surface_blit(self.fontRendererMedium.render(str(npc.needs.thirst), False, (0, 0, 0)), rect)
+                rect.y += self.fontRendererSmall.size("P")[1]
+                surface_blit(self.fontRendererSmall.render("S:" + str(npc.needs.sleep), False, (0, 0, 0)), rect)
+                # rect.y += self.fontRendererMedium.size("P")[1]
+                # surface_blit(self.fontRendererMedium.render(str(npc.needs.boredom), False, (0, 0, 0)), rect)
+                rect.y += self.fontRendererSmall.size("P")[1]
+                surface_blit(self.fontRendererBig.render(str(npc.currentState), False, (0, 0, 0)), rect)
+
+    def drawMap(self, surface_blit, tiles):
+        for spr in tiles:
+            rect = Rect(spr.rect.x - self.screenRect.x, spr.rect.y - self.screenRect.y, 0, 0)
+            self.spritedict[spr] = surface_blit(spr.image, rect)
+            surface_blit(self.fontRendererMedium.render(str(spr.f), False, (0, 0, 0)), rect)

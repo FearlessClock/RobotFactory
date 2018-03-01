@@ -154,13 +154,13 @@ class Map:
 
         for i in range(width):
             for j in range(height):
-                if 0 < i + 1 < height and not level[j][i + 1].wall:
+                if 0 <= i + 1 < height and not level[j][i + 1].wall:
                     level[j][i].addNeighbors(level[j][i + 1])
-                if 0 < i - 1 < height and not level[j][i - 1].wall:
+                if 0 <= i - 1 < height and not level[j][i - 1].wall:
                     level[j][i].addNeighbors(level[j][i - 1])
-                if 0 < j + 1 < width and not level[j + 1][i].wall:
+                if 0 <= j + 1 < width and not level[j + 1][i].wall:
                     level[j][i].addNeighbors(level[j + 1][i])
-                if 0 < j - 1 < width and not level[j - 1][i].wall:
+                if 0 <= j - 1 < width and not level[j - 1][i].wall:
                     level[j][i].addNeighbors(level[j - 1][i])
 
         file = open(os.path.join("data", "PointsOfInterest.json"), 'r')

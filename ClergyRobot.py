@@ -5,7 +5,7 @@ from random import random
 
 from pygame.math import Vector2
 
-from TaskList import TaskList
+from TaskList import TaskList, Task
 from Brain.FSM import FSM
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
 from Collection.PointOfInterest import PointOfInterest
@@ -47,7 +47,7 @@ class ClergyRobot(Creature):
 
     def __init__(self, x, y, tileLoader, tileSize, taskList: TaskList):
         Creature.__init__(self, x, y, tileLoader, tileSize)
-        self.pos = Vector2(x, y)
+        self.pos: Vector2 = Vector2(x, y)
         self.path = []
         self.tileSize = tileSize
         self.target = self.pos
@@ -69,6 +69,10 @@ class ClergyRobot(Creature):
         self.time = 0
 
         self.taskList = taskList
+
+        self.currentTask: Task = None
+
+        self.currentState = None
 
     def setPos(self, pos):
         self.pos = pos
@@ -116,13 +120,17 @@ class ClergyRobot(Creature):
     """Brain state functions"""
 
     def roaming(self, level):
+        self.currentState = "Roaming"
         """Free roaming state"""
         """Check trigger functions"""
-        if self.needs.hunger < 30:
-            self.brain.pushState(self.hungry)
+        if len(self.taskList.listOfTasks) > 0:
+            self.brain.pushState(self.taskingState)
+            self.movingTo = False
+        elif self.needs.hunger < 30:
+            self.brain.pushState(self.hungryState)
             self.movingTo = False
         elif self.needs.sleep < 40:
-            self.brain.pushState(self.tired)
+            self.brain.pushState(self.tiredState)
             self.movingTo = False
 
         """Resolve the state"""
@@ -146,7 +154,44 @@ class ClergyRobot(Creature):
             self.roamNode = level.getTileAt(Vector2(x, y))
         self.moveToNode(level, self.roamNode)
 
-    def hungry(self, level):
+    def taskingState(self, level):
+        self.currentState = "Tasking"
+        """State function for the AI to do player or system assigned tasks"""
+        """If all the tasks are done, go back
+           if the creature is hungry, go eat and come back later 
+           if the creature is tired, go sleep and come back later
+           (Might make these a setting in the task for uninterruptable task)"""
+        if self.currentTask is None and len(self.taskList.listOfTasks) <= 0:
+            self.brain.popState()
+        elif self.needs.isTired():
+            self.brain.pushState(self.tiredState)
+        elif self.needs.isHungry():
+            self.brain.pushState(self.hungryState)
+        else:
+            """If there is no current task, choose one"""
+            if self.currentTask is None:
+                # Get new task
+                if len(self.taskList.listOfTasks) > 0:
+                    print("Take task")
+                    self.currentTask = self.taskList.dequeueTask()
+
+            """If the task is not set, don't do anything"""
+            if self.currentTask is not None:
+                # Go to the task
+                disToTask = self.pos.distance_to(self.currentTask.placeToGo)
+                if disToTask > 5:
+                    gridSpaceGoTo = Vector2(self.currentTask.placeToGo.x/self.tileSize.x, self.currentTask.placeToGo.y/self.tileSize.y)
+                    self.moveToNode(level, level.getTileAt(gridSpaceGoTo))
+                else:
+                    # if there, do the task
+                    self.currentTask.workOnTask(1)
+                    if self.currentTask.taskFinished:
+                        print("Task done")
+                        self.currentTask = None
+
+
+    def hungryState(self, level):
+        self.currentState = "Hungry"
         """Hungry state"""
         if self.needs.hunger > 100:
             self.brain.popState()
@@ -163,7 +208,8 @@ class ClergyRobot(Creature):
                 self.findFood(level)
             # Get distance to food
 
-    def tired(self, level: Map):
+    def tiredState(self, level: Map):
+        self.currentState = "Tired"
         """Tired state"""
         if self.needs.sleep > 70:
             self.brain.popState()
@@ -183,7 +229,6 @@ class ClergyRobot(Creature):
     """Hungry functions"""
 
     def findFood(self, level):
-        print("Clergy Brain: Find Food")
         foodLocations = level.getFoodZones(self.pos)
         if foodLocations is not None and len(foodLocations) > 0:
             if len(foodLocations) == 1:
@@ -201,13 +246,11 @@ class ClergyRobot(Creature):
             print("There is no food! You will die!")
 
     def eatFood(self):
-        print("Clergy Brain: Eat Food")
         self.needs.hunger += 1
 
     """Tired functions"""
 
     def findBed(self, level):
-        print("Clergy Brain: Find bed")
         bedLocations = level.getBedZones(self.pos)
         if bedLocations is not None and len(bedLocations) > 0:
             if len(bedLocations) == 1:
@@ -225,10 +268,14 @@ class ClergyRobot(Creature):
             print("There is no food! You will die!")
 
     def sleep(self):
-        print("Clergy Brain: Sleep")
         self.needs.sleep += 1
 
     def aStar(self, level: Map, start: Node, goal: Node):
+        if goal.isSolid():
+            print("You can't go here, it is solid")
+            self.movingTo = False
+            return []
+
         if start.equal(goal):
             self.movingTo = False
             return []

@@ -57,8 +57,9 @@ class Gameloop:
 
     def addToTimedEvent(self):
         print("Timed event ran, next timed event at" ,self.timedEventHandler.elapsedTime+1000)
-        self.taskList.enqueueTask(Task(Vector2(0, 0), self.taskListEventCallback, 500))
-        self.timedEventHandler.addTimedEvent(self.timedEventHandler.elapsedTime+1000, self.addToTimedEvent)
+        taskPos = Vector2(10*self.tileSize.x, 0*self.tileSize.y)
+        self.taskList.enqueueTask(Task(taskPos, self.taskListEventCallback, 30))
+        self.timedEventHandler.addTimedEvent(self.timedEventHandler.elapsedTime+5000, self.addToTimedEvent)
 
     def startLoop(self):
         """The main function that runs the whole game."""
@@ -67,12 +68,12 @@ class Gameloop:
             self.deltaTime = self.clock.get_time()
             self.timedEventHandler.updateTimer(self.deltaTime)
             self.AICreature.Update (self.mapHolder.getCurrentMap(), self.deltaTime)
-            # self.AICreature1.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
-            # self.AICreature2.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
-            # self.AICreature3.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            self.AICreature1.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            self.AICreature2.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            self.AICreature3.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
 
-            self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None,
-                             [self.AICreature, self.AICreature1, self.AICreature2, self.AICreature3])
+            self.camera.drawScreen(self.window.screen, self.mapHolder.getCurrentMap(), None,
+                                   [self.AICreature, self.AICreature1, self.AICreature2, self.AICreature3])
             self.handleEvents()
             pygame.event.pump()
 

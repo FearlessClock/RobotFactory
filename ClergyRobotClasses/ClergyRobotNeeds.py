@@ -10,3 +10,15 @@ class Needs:
     def stepNeeds(self):
         self.hunger -= 1
         self.sleep -= 1
+
+    def isTired(self) -> bool:
+        if self.sleep < 40:
+            return True
+        else:
+            return False
+
+    def isHungry(self) -> bool:
+        if self.hunger < 30:
+            return True
+        else:
+            return False

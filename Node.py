@@ -41,4 +41,7 @@ class Node(Sprite):
         return other.pos.x == self.pos.x and other.pos.y == self.pos.y
 
     def __str__(self):
-        return "(" + self.pos.x + " : " + self.pos.y + ')'
+        return "(" + str(self.pos.x) + " : " + str(self.pos.y) + ')'
+
+    def isSolid(self):
+        return self.wall

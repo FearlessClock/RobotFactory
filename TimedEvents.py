@@ -30,7 +30,6 @@ class TimedEvents:
     def updateTimer(self, dt):
         """Move the timer forward by deltaTime"""
         self.elapsedTime += dt
-        print(self.elapsedTime)
         for event in self.eventsToCheck:
             if event.atWhatTime < self.elapsedTime:
                 event.callback()

@@ -28,7 +28,7 @@ class Map:
         self.alters = []
 
         self.map, self.width, self.height = self.readMap("maps", mapName, tileLoader, "mapTiles",
-                                                         {0: False, 1: True, 2: False, 3: True, 4: True})
+                                                         {0: False, 1: False, 2: False, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False})
         self.tileSize = tileSize
 
     def getWidth(self):
@@ -175,8 +175,8 @@ class Map:
                 self.addBedZone(pos, interest["name"], level[int(pos.y)][int(pos.x)])
             if interest["type"] == 2:
                 self.addFoodZone(pos, interest["name"], level[int(pos.y)][int(pos.x)])
-            level[int(interest["pos"]["y"])][int(interest["pos"]["x"])].image = tileLoader.getTileFromName("mapTiles",
-                                                                                                           4)
+            # level[int(interest["pos"]["y"])][int(interest["pos"]["x"])].image = tileLoader.getTileFromName("mapTiles",
+            #                                                                                                       4)
         return level, width, height
 
     def draw(self, surface):

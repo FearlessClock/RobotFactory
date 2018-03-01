@@ -2,23 +2,7 @@
   "points": [
     {
       "pos": {
-        "x": 9,
-        "y": 9
-      },
-      "name": "Alter",
-      "type": 0
-    },
-    {
-      "pos": {
-        "x": 3,
-        "y": 12
-      },
-      "name": "Bed",
-      "type": 1
-    },
-    {
-      "pos": {
-        "x": 5,
+        "x": 0,
         "y": 1
       },
       "name": "Oven",
@@ -27,10 +11,58 @@
     {
       "pos": {
         "x": 0,
+        "y": 2
+      },
+      "name": "Oven",
+      "type": 2
+    },
+    {
+      "pos": {
+        "x": 2,
         "y": 1
       },
       "name": "Oven",
       "type": 2
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 2
+      },
+      "name": "Oven",
+      "type": 2
+    },
+    {
+      "pos": {
+        "x": 16,
+        "y": 18
+      },
+      "name": "Bed",
+      "type": 1
+    },
+    {
+      "pos": {
+        "x": 16,
+        "y": 16
+      },
+      "name": "Bed",
+      "type": 1
+    },
+    {
+      "pos": {
+        "x": 19,
+        "y": 14
+      },
+      "name": "Bed",
+      "type": 1
+    },
+    {
+      "pos": {
+        "x": 19,
+        "y": 16
+      },
+      "name": "Bed",
+      "type": 1
     }
   ]
 }

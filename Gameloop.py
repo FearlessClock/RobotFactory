@@ -15,13 +15,13 @@ class Gameloop:
     def __init__(self):
         # Create the game camera
         self.tileSize = Vector2(40, 40)
-        self.screenSize = Vector2(600, 600)
+        self.screenSize = Vector2(800, 800)
         pygame.font.init()
 
         self.font_renderer = pygame.font.Font(os.path.join("fonts", 'Millennium-Regular_0.ttf'), 24)
         self.window = Window(self.screenSize, "Robot Clergy", self.tileSize, self.font_renderer)
-        self.camera = Camera(Vector2(15, 15), self.tileSize, self.screenSize)
-        self.mapHolder = MapHolder(["map1"], self.tileSize, self.window.tileLoader)
+        self.camera = Camera(Vector2(20, 20), self.tileSize, self.screenSize)
+        self.mapHolder = MapHolder(["Church"], self.tileSize, self.window.tileLoader)
 
         # Timing and delta time stuff
         self.clock = pygame.time.Clock()

@@ -39,17 +39,34 @@ Hunger, sleep, etc) and ways to fulfill their needs.
 <br>
 **Each agent:** Movement style <br>
 <img src="https://github.com/FearlessClock/RobotFactory/raw/master/docs/Movement%20and%20brain.gif" alt="" width="300" height="300"><br>
-I want the movement to be free form but I don't want the creature to
+<p>I want the movement to be free form but I don't want the creature to
 move in straight lines to the target. I will need some kind of path finding
 and so I will need so kind of graph in the levels. The level could have
 a grid overlaying it and then movement can be calculated from that. The
 agent will then have nodes that it has to move to making the movement
-calculated and smooth.
-The movement is done by taking the normalized vector between the target
-and the position of the agent.
+calculated and smooth.</p>
+<p>The movement is done by taking the normalized vector between the target
+and the position of the agent.</p>
 
-**Agent brain:** Each agent will have a brain consisting of a Finite
+**Agent brain:** <p>Each agent will have a brain consisting of a Finite
 State Machine (FSM) A finite state machine is a design pattern that uses
 a finite number of states to represent the different states the agent can
 be in and defines transitions between the different states. Each state
-has its own set of functions. The state also handles the transitions.
+has its own set of functions. The state also handles the transitions.</p>
+
+**Points of Interest**
+<p>The design idea behind PoIs are to facilitate the designation of places
+of rest or places to eat or other important places on the map.
+This will allow the AI to easily know where to go when in need of something</p>
+
+**Task lists**
+<p>This is one of the more important parts of the project. The task list
+is where the tasks created by the player will be put and also where
+automatic task will be put. The AI will then go and look in this list to
+find a task that it wants to do. </p>
+
+**Timed Events**
+<p>Timed events are not event based but rather are called when the time
+allocated to each "Event" arrives. By using this, I will be able to
+schedule tasks to run at a certain time in the game. (e.i make a Clergy
+ go preach to the congregation every 2h)</p>

@@ -6,6 +6,8 @@ from pygame.math import Vector2
 from ClergyRobot import ClergyRobot
 from Camera import Camera
 from MapHolder import MapHolder
+from TaskList import TaskList, Task
+from TimedEvents import TimedEvents
 from Window import Window
 
 
@@ -25,10 +27,18 @@ class Gameloop:
         self.clock = pygame.time.Clock()
         self.deltaTime = 0
 
-        self.AICreature = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
-        self.AICreature1 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
-        self.AICreature2 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
-        self.AICreature3 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y, self.window.tileLoader, self.tileSize)
+        self.taskList = TaskList()
+        self.timedEventHandler = TimedEvents()
+
+        self.AICreature  = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y,
+                                            self.window.tileLoader, self.tileSize, self.taskList)
+        self.AICreature1 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y,
+                                            self.window.tileLoader, self.tileSize, self.taskList)
+        self.AICreature2 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y,
+                                            self.window.tileLoader, self.tileSize, self.taskList)
+        self.AICreature3 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y,
+                                            self.window.tileLoader, self.tileSize, self.taskList)
+        self.timedEventHandler.addTimedEvent(1000, self.addToTimedEvent)
 
     def getInputs(self):
         """Return the events corresponding to each button press"""
@@ -42,15 +52,24 @@ class Gameloop:
                 pygame.quit()
                 return
 
+    def taskListEventCallback(self):
+        print("A task was just finished")
+
+    def addToTimedEvent(self):
+        print("Timed event ran, next timed event at" ,self.timedEventHandler.elapsedTime+1000)
+        self.taskList.enqueueTask(Task(Vector2(0, 0), self.taskListEventCallback, 500))
+        self.timedEventHandler.addTimedEvent(self.timedEventHandler.elapsedTime+1000, self.addToTimedEvent)
+
     def startLoop(self):
         """The main function that runs the whole game."""
         # Game loop
         while pygame.display.get_init():
             self.deltaTime = self.clock.get_time()
-            self.AICreature.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
-            self.AICreature1.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
-            self.AICreature2.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
-            self.AICreature3.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            self.timedEventHandler.updateTimer(self.deltaTime)
+            self.AICreature.Update (self.mapHolder.getCurrentMap(), self.deltaTime)
+            # self.AICreature1.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            # self.AICreature2.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
+            # self.AICreature3.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
 
             self.camera.draw(self.window.screen, self.mapHolder.getCurrentMap(), None,
                              [self.AICreature, self.AICreature1, self.AICreature2, self.AICreature3])

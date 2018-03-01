@@ -5,6 +5,7 @@ from random import random
 
 from pygame.math import Vector2
 
+from TaskList import TaskList
 from Brain.FSM import FSM
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
 from Collection.PointOfInterest import PointOfInterest
@@ -44,7 +45,7 @@ def reconstructPath(node):
 class ClergyRobot(Creature):
     """"Structure to store the AI information and to make the AI move intelligently """
 
-    def __init__(self, x, y, tileLoader, tileSize):
+    def __init__(self, x, y, tileLoader, tileSize, taskList: TaskList):
         Creature.__init__(self, x, y, tileLoader, tileSize)
         self.pos = Vector2(x, y)
         self.path = []
@@ -66,6 +67,8 @@ class ClergyRobot(Creature):
         self.foundBedPOI: PointOfInterest = None
 
         self.time = 0
+
+        self.taskList = taskList
 
     def setPos(self, pos):
         self.pos = pos
@@ -92,6 +95,7 @@ class ClergyRobot(Creature):
         if self.time > 300:
             self.time = 0
             self.needs.stepNeeds()
+        print(len(self.taskList.listOfTasks))
         self.brain.update(level)
 
     def moveToNode(self, level: Map, goal: Node):

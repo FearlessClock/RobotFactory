@@ -91,11 +91,11 @@ class ClergyRobot(Creature):
         self.rect.y = self.pos.y
 
     def Update(self, level: Map, dt: int):
+        """Update the AI. Brain and needs"""
         self.time += dt
         if self.time > 300:
             self.time = 0
             self.needs.stepNeeds()
-        print(len(self.taskList.listOfTasks))
         self.brain.update(level)
 
     def moveToNode(self, level: Map, goal: Node):

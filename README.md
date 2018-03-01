@@ -52,7 +52,21 @@ and the position of the agent.</p>
 State Machine (FSM) A finite state machine is a design pattern that uses
 a finite number of states to represent the different states the agent can
 be in and defines transitions between the different states. Each state
-has its own set of functions. The state also handles the transitions.</p>
+has its own set of functions. The state also handles the transitions.
+To do the transitions, the creature pushes states to a stack and when
+a state is finished, he pops the state off and carries on with what it
+was doing before leaving that state.</p>
+
+**Clergy Robot states**
+<p>A Clergy Robot has several states to simulate inteligence in the robot.
+The Robot has 4 states at the moment. It can be either Roaming (Doing nothing
+important), Eating, Sleeping or completing tasks that need to be done.
+The idle state will be the roaming state and from there the robot can go
+to any of the other states at its disposition. From the task state,
+a Robot can go to the eating or sleeping state and then come back when
+they are done.</p>
+<img src="https://github.com/FearlessClock/RobotFactory/raw/master/docs/State%20Machine.png" alt="" width="300" height="300"><br>
+
 
 **Points of Interest**
 <p>The design idea behind PoIs are to facilitate the designation of places
@@ -70,3 +84,4 @@ find a task that it wants to do. </p>
 allocated to each "Event" arrives. By using this, I will be able to
 schedule tasks to run at a certain time in the game. (e.i make a Clergy
  go preach to the congregation every 2h)</p>
+

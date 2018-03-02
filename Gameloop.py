@@ -38,7 +38,7 @@ class Gameloop:
                                             self.window.tileLoader, self.tileSize, self.taskList)
         self.AICreature3 = ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y,
                                             self.window.tileLoader, self.tileSize, self.taskList)
-        self.timedEventHandler.addTimedEvent(1000, self.addToTimedEvent)
+        self.timedEventHandler.addTimedEvent(10000, self.addToTimedEvent)
 
     def getInputs(self):
         """Return the events corresponding to each button press"""

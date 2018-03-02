@@ -105,10 +105,15 @@ class ClergyRobot(Creature):
     def moveToNode(self, level: Map, goal: Node) -> bool:
         """If no path is known, find a new one otherwise continue on this path"""
         if not self.movingTo:
+            print("Recalculate path")
             self.movingTo = True
+            self.path = []
             self.path = self.aStar(level,
                                    level.map[int(self.pos.y / self.tileSize.y)][int(self.pos.x / self.tileSize.x)],
                                    goal)
+            if len(self.path) > 0:
+                self.target = self.path[len(self.path)-1].pos
+
         if len(self.path) >= 0:
             dis = self.pos.distance_squared_to(self.target)
             if dis < 5 and len(self.path) > 0:
@@ -133,26 +138,27 @@ class ClergyRobot(Creature):
             self.brain.pushState(self.tiredState)
             self.movingTo = False
 
-        """Resolve the state"""
-        if not self.movingTo:
-            angle = random() * 360
-            radius = random() * 6
+            """Resolve the state"""
+        else:
+            if not self.movingTo:
+                angle = random() * 360
+                radius = random() * 6
 
-            x = int(self.pos.x / self.tileSize.x + radius * math.cos(math.radians(angle)))  # random() * level.width
-            y = int(self.pos.y / self.tileSize.y + radius * math.sin(math.radians(angle)))  # random() * level.height
+                x = int(self.pos.x / self.tileSize.x + radius * math.cos(math.radians(angle)))  # random() * level.width
+                y = int(self.pos.y / self.tileSize.y + radius * math.sin(math.radians(angle)))  # random() * level.height
 
-            if x >= level.width:
-                x = level.width - 1
-            elif x < 0:
-                x = 0
+                if x >= level.width:
+                    x = level.width - 1
+                elif x < 0:
+                    x = 0
 
-            if y >= level.height:
-                y = level.height - 1
-            elif y < 0:
-                y = 0
+                if y >= level.height:
+                    y = level.height - 1
+                elif y < 0:
+                    y = 0
 
-            self.roamNode = level.getTileAt(Vector2(x, y))
-        self.moveToNode(level, self.roamNode)
+                self.roamNode = level.getTileAt(Vector2(x, y))
+            self.moveToNode(level, self.roamNode)
 
     def taskingState(self, level):
         self.currentState = "Tasking"

@@ -31,7 +31,7 @@ class Window:
         """Load all the images and spritesheets"""
         self.tileLoader.addSpriteSheet("mapTiles", os.path.join('images', "TileSheet.png"), Vector2(16, 16),
                                        Vector2(self.TILE_SIZE.x, self.TILE_SIZE.y), 3, 3)
-        self.tileLoader.addSpriteSheet("player", os.path.join('images', "CRICKET.png"), Vector2(16, 16),
+        self.tileLoader.addSpriteSheet("player", os.path.join('images', "hand.png"), Vector2(16, 16),
                                        Vector2(self.TILE_SIZE.x, self.TILE_SIZE.y), 4, 4)
 
     def addScreenToRender(self, screenToImport, screenName):

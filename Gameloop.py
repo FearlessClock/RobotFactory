@@ -6,6 +6,7 @@ from pygame.math import Vector2
 from ClergyRobot import ClergyRobot
 from Camera import Camera
 from MapHolder import MapHolder
+from Player import Player
 from TaskList import TaskList, Task
 from TimedEvents import TimedEvents
 from Window import Window
@@ -22,6 +23,10 @@ class Gameloop:
         self.window = Window(self.screenSize, "Robot Clergy", self.tileSize, self.font_renderer)
         self.camera = Camera(Vector2(20, 20), self.tileSize, self.screenSize)
         self.mapHolder = MapHolder(["Church"], self.tileSize, self.window.tileLoader)
+
+        # Init the player class
+        playerImage = self.window.tileLoader.getImageByName("player", 0, 0)
+        self.player = Player(playerImage, self.screenSize)
 
         # Timing and delta time stuff
         self.clock = pygame.time.Clock()
@@ -51,6 +56,9 @@ class Gameloop:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.event.post(pygame.event.Event(pygame.QUIT))
 
 
 
@@ -70,11 +78,12 @@ class Gameloop:
             self.deltaTime = self.clock.get_time()
             self.timedEventHandler.updateTimer(self.deltaTime)
             self.AICreature.Update (self.mapHolder.getCurrentMap(), self.deltaTime)
+            self.player.updateMousePosition()
             # self.AICreature1.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
             # self.AICreature2.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
             # self.AICreature3.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
 
-            self.camera.drawScreen(self.window.screen, self.mapHolder.getCurrentMap(), None,
+            self.camera.drawScreen(self.window.screen, self.mapHolder.getCurrentMap(), self.player,
                                    [self.AICreature])
             self.handleEvents()
             pygame.event.pump()

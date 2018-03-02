@@ -17,6 +17,7 @@ class Window:
         self.screen = pygame.display.set_mode([self.width, self.height])
         pygame.display.set_caption(caption)
         pygame.mouse.set_visible(False)
+        pygame.event.set_grab(True)
 
         self.font_renderer = font_renderer
         self.TILE_SIZE = TILE_SIZE
@@ -30,6 +31,8 @@ class Window:
         """Load all the images and spritesheets"""
         self.tileLoader.addSpriteSheet("mapTiles", os.path.join('images', "TileSheet.png"), Vector2(16, 16),
                                        Vector2(self.TILE_SIZE.x, self.TILE_SIZE.y), 3, 3)
+        self.tileLoader.addSpriteSheet("player", os.path.join('images', "CRICKET.png"), Vector2(16, 16),
+                                       Vector2(self.TILE_SIZE.x, self.TILE_SIZE.y), 4, 4)
 
     def addScreenToRender(self, screenToImport, screenName):
         """Add an interactive screen or game screen to the render for easy and unified access."""

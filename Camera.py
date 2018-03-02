@@ -67,7 +67,6 @@ class Camera(pygame.sprite.Group):
             rect = Rect(player.rect)
             rect.x -= self.screenRect.x
             rect.y -= self.screenRect.y
-            player.net.drawScreen(surface_blit, self.screenRect)
             surface_blit(player.image, rect)
 
         # Draw debug info to screen

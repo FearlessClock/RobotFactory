@@ -85,3 +85,23 @@ allocated to each "Event" arrives. By using this, I will be able to
 schedule tasks to run at a certain time in the game. (e.i make a Clergy
  go preach to the congregation every 2h)</p>
 
+**Game style**
+<p>My art isn't good but it works. I made some "Real" art for the tileset
+and it makes the game look a lot better. The AI still doesn't have its
+own images but I will do that later</p>
+<img src="https://github.com/FearlessClock/RobotFactory/raw/master/images/TileSheet.png" alt="" width="300" height="300"><br>
+
+
+**Dev Log**
+<p>When the robot was going to spots on the map, the robot would stop
+just before getting to the spot where I wanted him to go and I thought
+it was a probleme with the AStar code but it was actaully to do with
+how the robot was calculating its distance to the target. By converting
+to grid space, the robot got into the grid the moment the top left corner
+touched the square. I changed it to calculate the distance in world space,
+and now it works much better.</p>
+<p>I added a log of debugging and most notably of all is the pathfinding
+debugging! Which is not only really useful but also cool to look at. </p>
+<img src="https://github.com/FearlessClock/RobotFactory/raw/master/docs/Debugging,%20states%20and%20new%20tiles.png" alt="" width="300" height="300"><br>
+
+<p></p>

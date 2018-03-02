@@ -1,45 +1,17 @@
 import math
 from builtins import int
-from enum import Enum
 from random import random
 
 from pygame.math import Vector2
 
-from TaskList import TaskList, Task
+from AStar import aStar
 from Brain.FSM import FSM
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
 from Collection.PointOfInterest import PointOfInterest
 from Creature import Creature
 from Map import Map
 from Node import Node
-
-
-class AIStates(Enum):
-    ROAMING = 1
-    GOINGTO = 2
-    AT = 3
-
-
-def distanceToNode(start: Node, goal, tileSize):
-    return math.sqrt(math.pow(start.pos.x / tileSize.x - goal.pos.x / tileSize.x, 2) + math.pow(
-        start.pos.y / tileSize.y - goal.pos.y / tileSize.y, 2))
-
-
-def getManhattenDistance(start: Node, goal: Node, tileSize):
-    return abs(start.pos.x / tileSize.x - goal.pos.x / tileSize.x) + abs(
-        start.pos.y / tileSize.y - goal.pos.y / tileSize.y)
-
-
-def GetHScore(curNeigh, goal, tileSize):
-    return distanceToNode(curNeigh, goal, tileSize)
-
-
-def reconstructPath(node):
-    path = []
-    while node.parent is not None:
-        path.append(node)
-        node = node.parent
-    return path
+from TaskList import TaskList, Task
 
 
 class ClergyRobot(Creature):
@@ -102,17 +74,20 @@ class ClergyRobot(Creature):
             self.needs.stepNeeds()
         self.brain.update(level)
 
-    def moveToNode(self, level: Map, goal: Node) -> bool:
+    def moveToNode(self, level: Map, goal: Node):
         """If no path is known, find a new one otherwise continue on this path"""
         if not self.movingTo:
             print("Recalculate path")
             self.movingTo = True
             self.path = []
-            self.path = self.aStar(level,
-                                   level.map[int(self.pos.y / self.tileSize.y)][int(self.pos.x / self.tileSize.x)],
-                                   goal)
+            self.path = aStar(level,
+                              level.map[int(self.pos.y / self.tileSize.y)][int(self.pos.x / self.tileSize.x)],
+                              goal, self.tileSize)
             if len(self.path) > 0:
-                self.target = self.path[len(self.path)-1].pos
+                self.movingTo = True
+
+            if len(self.path) > 0:
+                self.target = self.path[len(self.path) - 1].pos
 
         if len(self.path) >= 0:
             dis = self.pos.distance_squared_to(self.target)
@@ -145,7 +120,8 @@ class ClergyRobot(Creature):
                 radius = random() * 6
 
                 x = int(self.pos.x / self.tileSize.x + radius * math.cos(math.radians(angle)))  # random() * level.width
-                y = int(self.pos.y / self.tileSize.y + radius * math.sin(math.radians(angle)))  # random() * level.height
+                y = int(
+                    self.pos.y / self.tileSize.y + radius * math.sin(math.radians(angle)))  # random() * level.height
 
                 if x >= level.width:
                     x = level.width - 1
@@ -166,13 +142,15 @@ class ClergyRobot(Creature):
         """If all the tasks are done, go back
            if the creature is hungry, go eat and come back later 
            if the creature is tired, go sleep and come back later
-           (Might make these a setting in the task for uninterruptable task)"""
+           (Might make these a setting in the task for un-interruptable task)"""
         if self.currentTask is None and len(self.taskList.listOfTasks) <= 0:
             self.brain.popState()
         elif self.needs.isTired():
             self.brain.pushState(self.tiredState)
+            self.movingTo = False
         elif self.needs.isHungry():
             self.brain.pushState(self.hungryState)
+            self.movingTo = False
         else:
             """If there is no current task, choose one"""
             if self.currentTask is None:
@@ -186,16 +164,16 @@ class ClergyRobot(Creature):
                 # Go to the task
                 disToTask = self.pos.distance_to(self.currentTask.placeToGo)
                 if disToTask > 5:
-                    gridSpaceGoTo = Vector2(self.currentTask.placeToGo.x/self.tileSize.x, self.currentTask.placeToGo.y/self.tileSize.y)
+                    gridSpaceGoTo = Vector2(self.currentTask.placeToGo.x / self.tileSize.x,
+                                            self.currentTask.placeToGo.y / self.tileSize.y)
                     self.roamNode = level.getTileAt(gridSpaceGoTo)
-                    self.moveToNode(level,self.roamNode)
+                    self.moveToNode(level, self.roamNode)
                 else:
                     # if there, do the task
                     self.currentTask.workOnTask(1)
                     if self.currentTask.taskFinished:
                         print("Task done")
                         self.currentTask = None
-
 
     def hungryState(self, level):
         self.currentState = "Hungry"
@@ -236,13 +214,14 @@ class ClergyRobot(Creature):
     """Roaming functions"""
 
     """Hungry functions"""
+
     def findRandomFood(self, level):
         foodLocations = level.getFoodZones(self.pos)
         if foodLocations is not None and len(foodLocations) > 0:
             if len(foodLocations) == 1:
                 self.foundFoodPOI = foodLocations[0]
             else:
-                randomFoodIndex = int(random()*len(foodLocations))
+                randomFoodIndex = int(random() * len(foodLocations))
                 self.foundFoodPOI = foodLocations[randomFoodIndex]
         else:
             print("There is no bed! You will die!")
@@ -275,11 +254,10 @@ class ClergyRobot(Creature):
             if len(bedLocations) == 1:
                 self.foundBedPOI = bedLocations[0]
             else:
-                randomBedIndex = int(random()*len(bedLocations))
+                randomBedIndex = int(random() * len(bedLocations))
                 self.foundBedPOI = bedLocations[randomBedIndex]
         else:
             print("There is no bed! You will die!")
-
 
     def findBed(self, level):
         bedLocations = level.getBedZones(self.pos)
@@ -300,68 +278,3 @@ class ClergyRobot(Creature):
 
     def sleep(self):
         self.needs.sleep += 1
-
-    def aStar(self, level: Map, start: Node, goal: Node):
-        if goal.isSolid():
-            print("You can't go here, it is solid")
-            self.movingTo = False
-            return []
-
-        if start.equal(goal):
-            self.movingTo = False
-            return []
-        """Reset all the maze information"""
-        for i in range(level.getWidth()):
-            for j in range(level.getHeight()):
-                level.map[i][j].g = -1
-                level.map[i][j].f = 0
-                level.map[i][j].parent = None
-                level.map[i][j].floor = 0
-
-        # Already visited nodes
-        closedSet = []
-
-        start.g = 0
-        start.f = 0  # getManhattenDistance(start, goal)
-
-        # Possible nodes to visit
-        openSet = [start]
-
-        while len(openSet) > 0:
-            index = 0
-            best = openSet[index].f
-            # Find the best node to go to next
-            for i in range(0, len(openSet)):
-                if openSet[i].f < best:
-                    best = openSet[i].f
-                    index = i
-            current = openSet.pop(index)
-
-            # When the algo reaches the goal, quit
-            if current.equal(goal):
-                return reconstructPath(current)
-
-            closedSet.append(current)
-
-            neighs = current.getNeighbors()
-            # For each neighbor, check if it is an interesting candidate
-            for i in range(0, len(neighs)):
-                curNeigh = neighs[i]
-                if closedSet.__contains__(curNeigh):
-                    continue
-
-                if not openSet.__contains__(curNeigh):
-                    openSet.append(curNeigh)
-
-                tentativeGScore = current.g + 1
-                if curNeigh.g != -1 and tentativeGScore >= curNeigh.g:
-                    continue  # It's not a better score
-
-                curNeigh.parent = current
-                curNeigh.g = tentativeGScore
-                curNeigh.f = curNeigh.g + GetHScore(curNeigh, goal, self.tileSize)
-                curNeigh.floor = 255
-
-        print("Error No path found")
-        self.movingTo = False
-        return []

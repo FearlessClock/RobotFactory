@@ -5,6 +5,10 @@ from pygame.math import Vector2
 from pygame.rect import Rect
 from pygame.sprite import Sprite
 
+from AStar import aStar
+from Map import Map
+from Node import Node
+
 
 class Player:
     """Class handling all the user input"""
@@ -13,6 +17,7 @@ class Player:
         self.image = image
         self.rect = Rect(0, 0, image.get_width(), image.get_height())
         self.screenSize: Vector2 = screenSize
+        self.path = []
 
     def getMousePosition(self):
         return self.mousePosition
@@ -29,3 +34,9 @@ class Player:
             self.mousePosition.y = self.screenSize.y-self.rect.h
         self.rect.x = self.mousePosition.x
         self.rect.y = self.mousePosition.y
+
+    def updateMouse(self, level, tileSize):
+        self.updateMousePosition()
+        self.path = aStar(level,
+                          level.map[int(5)][int(5)],
+                          level.map[int(self.rect.y / tileSize.y)][int(self.rect.x / tileSize.x)], tileSize)

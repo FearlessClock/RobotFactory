@@ -68,6 +68,11 @@ class Camera(pygame.sprite.Group):
             rect.x -= self.screenRect.x
             rect.y -= self.screenRect.y
             surface_blit(player.image, rect)
+            pointList = []
+            for i in range(len(player.path) - 1, 0, -1):
+                pointList.append([player.path[i].rect.x + self.tileSize.x / 2, player.path[i].rect.y + self.tileSize.y / 2])
+            if len(pointList) > 1:
+                pygame.draw.lines(surface, (0,255,0), False, pointList, 5)
 
         # Draw debug info to screen
         rect.x = 0

@@ -15,7 +15,7 @@ from Window import Window
 class Gameloop:
     def __init__(self):
         # Create the game camera
-        self.tileSize = Vector2(40, 40)
+        self.tileSize = Vector2(30, 30)
         self.screenSize = Vector2(800, 800)
         pygame.font.init()
 
@@ -77,8 +77,8 @@ class Gameloop:
         while pygame.display.get_init():
             self.deltaTime = self.clock.get_time()
             self.timedEventHandler.updateTimer(self.deltaTime)
+            self.player.updateMouse(self.mapHolder.getCurrentMap(), self.tileSize)
             self.AICreature.Update (self.mapHolder.getCurrentMap(), self.deltaTime)
-            self.player.updateMousePosition()
             # self.AICreature1.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
             # self.AICreature2.Update(self.mapHolder.getCurrentMap(), self.deltaTime)
             # self.AICreature3.Update(self.mapHolder.getCurrentMap(), self.deltaTime)

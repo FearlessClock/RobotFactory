@@ -102,7 +102,7 @@ class ClergyRobot(Creature):
             self.needs.stepNeeds()
         self.brain.update(level)
 
-    def moveToNode(self, level: Map, goal: Node):
+    def moveToNode(self, level: Map, goal: Node) -> bool:
         """If no path is known, find a new one otherwise continue on this path"""
         if not self.movingTo:
             self.movingTo = True
@@ -181,7 +181,8 @@ class ClergyRobot(Creature):
                 disToTask = self.pos.distance_to(self.currentTask.placeToGo)
                 if disToTask > 5:
                     gridSpaceGoTo = Vector2(self.currentTask.placeToGo.x/self.tileSize.x, self.currentTask.placeToGo.y/self.tileSize.y)
-                    self.moveToNode(level, level.getTileAt(gridSpaceGoTo))
+                    self.roamNode = level.getTileAt(gridSpaceGoTo)
+                    self.moveToNode(level,self.roamNode)
                 else:
                     # if there, do the task
                     self.currentTask.workOnTask(1)
@@ -198,35 +199,47 @@ class ClergyRobot(Creature):
             self.foundFoodPOI = None
         else:
             if self.foundFoodPOI is not None:
-                pos = Vector2(self.pos.x / self.tileSize.x, self.pos.y / self.tileSize.y)
-                distanceToFood = self.foundFoodPOI.pos.distance_to(pos)
-                if distanceToFood < 1:
+                pos = Vector2(self.foundFoodPOI.pos.x * self.tileSize.x, self.foundFoodPOI.pos.y * self.tileSize.y)
+                distanceToFood = pos.distance_to(self.pos)
+                if distanceToFood < 5:
                     self.eatFood()
                 else:
-                    self.moveToNode(level, level.getTileAt(self.foundFoodPOI.pos))
+                    self.roamNode = level.getTileAt(self.foundFoodPOI.pos)
+                    self.moveToNode(level, self.roamNode)
             else:
-                self.findFood(level)
+                self.findRandomFood(level)
             # Get distance to food
 
     def tiredState(self, level: Map):
         self.currentState = "Tired"
         """Tired state"""
-        if self.needs.sleep > 70:
+        if self.needs.sleep > 100:
             self.brain.popState()
         else:
             if self.foundBedPOI is not None:
-                pos = Vector2(self.pos.x / self.tileSize.x, self.pos.y / self.tileSize.y)
-                distanceToBed = self.foundBedPOI.pos.distance_to(pos)
-                if distanceToBed < 1:
+                pos = Vector2(self.foundBedPOI.pos.x * self.tileSize.x, self.foundBedPOI.pos.y * self.tileSize.y)
+                distanceToBed = pos.distance_to(self.pos)
+                if distanceToBed < 5:
                     self.sleep()
                 else:
-                    self.moveToNode(level, level.getTileAt(self.foundBedPOI.pos))
+                    self.roamNode = level.getTileAt(self.foundBedPOI.pos)
+                    self.moveToNode(level, self.roamNode)
             else:
-                self.findBed(level)
+                self.findRandomBed(level)
 
     """Roaming functions"""
 
     """Hungry functions"""
+    def findRandomFood(self, level):
+        foodLocations = level.getFoodZones(self.pos)
+        if foodLocations is not None and len(foodLocations) > 0:
+            if len(foodLocations) == 1:
+                self.foundFoodPOI = foodLocations[0]
+            else:
+                randomFoodIndex = int(random()*len(foodLocations))
+                self.foundFoodPOI = foodLocations[randomFoodIndex]
+        else:
+            print("There is no bed! You will die!")
 
     def findFood(self, level):
         foodLocations = level.getFoodZones(self.pos)
@@ -249,6 +262,18 @@ class ClergyRobot(Creature):
         self.needs.hunger += 1
 
     """Tired functions"""
+
+    def findRandomBed(self, level):
+        bedLocations = level.getBedZones(self.pos)
+        if bedLocations is not None and len(bedLocations) > 0:
+            if len(bedLocations) == 1:
+                self.foundBedPOI = bedLocations[0]
+            else:
+                randomBedIndex = int(random()*len(bedLocations))
+                self.foundBedPOI = bedLocations[randomBedIndex]
+        else:
+            print("There is no bed! You will die!")
+
 
     def findBed(self, level):
         bedLocations = level.getBedZones(self.pos)

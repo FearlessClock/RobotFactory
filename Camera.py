@@ -61,7 +61,7 @@ class Camera(pygame.sprite.Group):
         rect = Rect(0, 0, 0, 0)
         # Move every sprite so as to be well placed with the camera
         self.drawMap(surface_blit, sprites)
-        self.drawSprites(surface_blit, npcList)
+        self.drawSprites(surface_blit, npcList, surface)
 
         if player is not None:
             rect = Rect(player.rect)
@@ -77,7 +77,7 @@ class Camera(pygame.sprite.Group):
 
         self.lostsprites = []
 
-    def drawSprites(self, surface_blit, AI):
+    def drawSprites(self, surface_blit, AI, screen):
         if AI is not None:
             for npc in AI:
                 rect = Rect(npc.rect.x - self.screenRect.x, npc.rect.y - self.screenRect.y, 0, 0)
@@ -91,6 +91,18 @@ class Camera(pygame.sprite.Group):
                 # surface_blit(self.fontRendererMedium.render(str(npc.needs.boredom), False, (0, 0, 0)), rect)
                 rect.y += self.fontRendererSmall.size("P")[1]
                 surface_blit(self.fontRendererBig.render(str(npc.currentState), False, (0, 0, 0)), rect)
+                pointList = []
+                if npc.target is not None:
+                    pointList.append(npc.target+self.tileSize/2)
+                for i in range(len(npc.path)-1, 0, -1):
+                    pointList.append([npc.path[i].rect.x+self.tileSize.x/2, npc.path[i].rect.y+self.tileSize.y/2])
+                if npc.roamNode is not None:
+                    pygame.draw.rect(screen, (0, 0, 0), Rect(npc.roamNode.pos.x+10,npc.roamNode.pos.y+10, 30, 30), 5)
+                    pointList.append(npc.roamNode.pos+self.tileSize/2)
+                if len(pointList) > 1:
+                    pygame.draw.lines(screen, (0,0,0), False, pointList, 5)
+                if npc.roamNode is not None:
+                    pygame.draw.rect(screen, (0, 0, 0), Rect(npc.roamNode.pos.x+10,npc.roamNode.pos.y+10, 30, 30), 5)
 
     def drawMap(self, surface_blit, tiles):
         for spr in tiles:

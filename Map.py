@@ -1,5 +1,6 @@
 import json
 import os
+from random import random
 
 import pygame
 from pygame.math import Vector2
@@ -30,6 +31,17 @@ class Map:
         self.map, self.width, self.height = self.readMap("maps", mapName, tileLoader, "mapTiles",
                                                          {0: False, 1: False, 2: False, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False})
         self.tileSize = tileSize
+
+    def getRandomEmptyNode(self) -> Node:
+        x = random() * self.width
+        y = random() * self.height
+        emptyNode: Node = self.getTileAt(Vector2(x, y))
+        while emptyNode.isSolid():
+            x = random() * self.width
+            y = random() * self.height
+            emptyNode: Node = self.getTileAt(Vector2(x, y))
+        return emptyNode
+
 
     def getWidth(self):
         return self.width

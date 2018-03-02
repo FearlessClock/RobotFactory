@@ -91,6 +91,8 @@ and it makes the game look a lot better. The AI still doesn't have its
 own images but I will do that later</p>
 <img src="https://github.com/FearlessClock/RobotFactory/raw/master/images/TileSheet.png" alt="" width="300" height="300"><br>
 
+**Player**
+<p></p>
 
 **Dev Log**
 <p>When the robot was going to spots on the map, the robot would stop
@@ -102,6 +104,10 @@ touched the square. I changed it to calculate the distance in world space,
 and now it works much better.</p>
 <p>I added a log of debugging and most notably of all is the pathfinding
 debugging! Which is not only really useful but also cool to look at. </p>
-<img src="https://github.com/FearlessClock/RobotFactory/raw/master/docs/Debugging,%20states%20and%20new%20tiles.png" alt="" width="300" height="300"><br>
 
+<p>I fixed the pathing problem! When switching states from tasking to
+eating/sleeping, the pathing wasn't turned off and so the AI walked to
+the last target before changing to a new target. I also realised that
+the A* algorithm wasn't returning the whole path which made making the
+AI walk to the last.</p>
 <p></p>

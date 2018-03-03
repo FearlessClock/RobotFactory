@@ -17,7 +17,7 @@ class Window:
         self.screen = pygame.display.set_mode([self.width, self.height])
         pygame.display.set_caption(caption)
         pygame.mouse.set_visible(False)
-        pygame.event.set_grab(True)
+        # pygame.event.set_grab(True)
 
         self.font_renderer = font_renderer
         self.TILE_SIZE = TILE_SIZE

@@ -14,18 +14,19 @@ class TimedEvents:
 
     def addTimedEvent(self, time, callback):
         """Add an event to the list in order"""
+        timedEvent = TimedEventParams(time+self.elapsedTime, callback)
         if len(self.eventsToCheck) > 0:
             addOnce = False
             intermittence = []
             for evt in self.eventsToCheck:
                 if not addOnce and evt.atWhatTime > time:
-                    intermittence.append(TimedEventParams(time, callback))
+                    intermittence.append(timedEvent)
                 intermittence.append(evt)
             if not addOnce:
-                intermittence.append(TimedEventParams(time, callback))
+                intermittence.append(timedEvent)
             self.eventsToCheck = intermittence
         else:
-            self.eventsToCheck.append(TimedEventParams(time, callback))
+            self.eventsToCheck.append(timedEvent)
 
     def updateTimer(self, dt):
         """Move the timer forward by deltaTime"""

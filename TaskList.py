@@ -2,7 +2,7 @@ from pygame.math import Vector2
 
 
 class Task:
-    def __init__(self, placeToGo: Vector2, callback, amountOfWorkToFinishTask):
+    def __init__(self, placeToGo: Vector2, callback, amountOfWorkToFinishTask, taskName=None):
         """
         Init the Task to accomplish
         :param placeToGo: World Space vector
@@ -14,6 +14,7 @@ class Task:
         self.amountOfWorkToFinishTask = amountOfWorkToFinishTask
         self.workProgress = 0
         self.taskFinished = False
+        self.taskName = taskName
 
     def workOnTask(self, amount):
         """Work on the task till it is finished, then call the callback"""

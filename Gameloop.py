@@ -53,10 +53,11 @@ class Gameloop:
         return events
 
     def preach(self):
+        self.timedEventHandler.addTimedEvent(20000, self.peopleStartComingForService)
         print("Blah blah blah")
 
     def peopleStartComingForService(self):
-        task = Task(Vector2(11*self.tileSize.x, 5*self.tileSize.y), self.preach, 250)
+        task = Task(Vector2(11*self.tileSize.x, 5*self.tileSize.y), self.preach, 250, "Preach")
         self.taskList.enqueueTask(task)
         x = self.tileSize.x
         y = self.tileSize.y
@@ -86,9 +87,8 @@ class Gameloop:
         print("A task was just finished")
 
     def addToTimedEvent(self):
-        print("Timed event ran, next timed event at", self.timedEventHandler.elapsedTime + 1000)
         taskPos = self.mapHolder.getCurrentMap().getRandomEmptyNode().pos  # Vector2(6*self.tileSize.x, 15*self.tileSize.y)
-        self.taskList.enqueueTask(Task(taskPos, self.taskListEventCallback, 30))
+        self.taskList.enqueueTask(Task(taskPos, self.taskListEventCallback, 30, "RandomTask"))
         self.timedEventHandler.addTimedEvent(self.timedEventHandler.elapsedTime + 5000, self.addToTimedEvent)
 
     def startLoop(self):
@@ -112,6 +112,10 @@ class Gameloop:
 
             self.camera.drawScreen(self.window.screen, currentMap, self.player,
                                    npcs)
+            debugInfo = [len(self.taskList.listOfTasks)]
+            debugArray = [task.taskName for task in self.taskList.listOfTasks]
+            debugInfo.extend(debugArray)
+            self.camera.drawDebug(self.window.screen, debugInfo)
             self.handleEvents()
             pygame.event.pump()
 

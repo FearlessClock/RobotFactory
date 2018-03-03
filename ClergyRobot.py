@@ -106,7 +106,6 @@ class ClergyRobot(Creature):
             if self.currentTask is None:
                 # Get new task
                 if len(self.taskList.listOfTasks) > 0:
-                    print("Take task")
                     self.currentTask = self.taskList.dequeueTask()
 
             """If the task is not set, don't do anything"""

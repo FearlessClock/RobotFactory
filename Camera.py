@@ -113,3 +113,10 @@ class Camera(pygame.sprite.Group):
             rect = Rect(spr.rect.x - self.screenRect.x, spr.rect.y - self.screenRect.y, 0, 0)
             self.spritedict[spr] = surface_blit(spr.image, rect)
             surface_blit(self.fontRendererMedium.render(str(spr.f), False, (0, 0, 0)), rect)
+
+
+    def drawDebug(self, surface, debugInfo):
+        rect = Rect(0, 0, 10, 10)
+        for arg in debugInfo:
+            rect.y += self.fontRendererMedium.size("P")[1]
+            surface.blit(self.fontRendererMedium.render(str(arg), False, (0, 0, 0)), rect)

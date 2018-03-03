@@ -30,6 +30,7 @@ class Map:
 
         self.map, self.width, self.height = self.readMap("maps", mapName, tileLoader, "mapTiles",
                                                          {0: False, 1: False, 2: False, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False})
+        self.gridSize = Vector2(self.width, self.height)
         self.tileSize = tileSize
 
     def getRandomEmptyNode(self) -> Node:

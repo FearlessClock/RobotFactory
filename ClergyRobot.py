@@ -5,7 +5,6 @@ from random import random
 from pygame.math import Vector2
 
 from AStar import aStar
-from Brain.FSM import FSM
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
 from Collection.PointOfInterest import PointOfInterest
 from Creature import Creature
@@ -18,20 +17,16 @@ class ClergyRobot(Creature):
     """"Structure to store the AI information and to make the AI move intelligently """
 
     def __init__(self, x, y, tileLoader, tileSize, taskList: TaskList):
-        Creature.__init__(self, x, y, tileLoader, tileSize)
+        Creature.__init__(self, x, y, tileLoader, tileSize, 3)
+        self.image = tileLoader.getTileFromName("mapTiles", 3)
         self.pos: Vector2 = Vector2(x, y)
         self.path = []
         self.tileSize = tileSize
-        self.target = self.pos
         self.roamNode = None
-        self.movingTo = False
         self.zoneToGoTo = 0
-
-        self.speed = 3
 
         # Creature stats, used in the tamgotchi life thing
         self.needs = Needs()
-        self.brain = FSM()
         self.brain.pushState(self.roaming)
 
         # Flags for FSM stuff
@@ -44,58 +39,13 @@ class ClergyRobot(Creature):
 
         self.currentTask: Task = None
 
-        self.currentState = None
-
-    def setPos(self, pos):
-        self.pos = pos
-        self.rect.x = pos.x
-        self.rect.y = pos.y
-
-    def setPosLerp(self, pos):
-        self.pos = self.pos.lerp(pos, 0.2)
-        self.rect.x = self.pos.x
-        self.rect.y = self.pos.y
-
-    def setPosNorm(self, pos: Vector2):
-        vecDis: Vector2 = pos - self.pos
-        length = vecDis.length_squared()
-        if not length == 0:
-            vecDis.normalize_ip()
-        self.pos += vecDis * self.speed
-
-        self.rect.x = self.pos.x
-        self.rect.y = self.pos.y
-
     def Update(self, level: Map, dt: int):
         """Update the AI. Brain and needs"""
         self.time += dt
-        if self.time > 300:
+        if self.time > 500:
             self.time = 0
             self.needs.stepNeeds()
         self.brain.update(level)
-
-    def moveToNode(self, level: Map, goal: Node):
-        """If no path is known, find a new one otherwise continue on this path"""
-        if not self.movingTo:
-            print("Recalculate path")
-            self.movingTo = True
-            self.path = []
-            self.path = aStar(level,
-                              level.map[int(self.pos.y / self.tileSize.y)][int(self.pos.x / self.tileSize.x)],
-                              goal, self.tileSize)
-            if len(self.path) > 0:
-                self.movingTo = True
-
-            if len(self.path) > 0:
-                self.target = self.path[len(self.path) - 1].pos
-
-        if len(self.path) >= 0:
-            dis = self.pos.distance_squared_to(self.target)
-            if dis < 5 and len(self.path) > 0:
-                self.target = self.path.pop().pos
-            self.setPosNorm(self.target)
-            if len(self.path) == 0 and dis < 2:
-                self.movingTo = False
 
     """Brain state functions"""
 

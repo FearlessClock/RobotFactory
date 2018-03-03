@@ -94,6 +94,13 @@ own images but I will do that later</p>
 **Player**
 <p></p>
 
+**Human**
+<p>A human is a dumb creature that just has a single decorative task in
+the game. In the first iteration, they are the people coming to the
+robot service. They are very simple, being able to just be spawned,
+go to a spot, wait for a task to be finished then leave and disappear.
+The also have a factory that easily creates them.</p>
+
 **Dev Log**
 <p>When the robot was going to spots on the map, the robot would stop
 just before getting to the spot where I wanted him to go and I thought
@@ -110,4 +117,11 @@ eating/sleeping, the pathing wasn't turned off and so the AI walked to
 the last target before changing to a new target. I also realised that
 the A* algorithm wasn't returning the whole path which made making the
 AI walk to the last.</p>
+
+<p>I added some humans for the congregation. I now have a concrete example
+of how I want to use the examples and the humans. I have a task that is spawned
+and at the same time I create a few humans that will go and sit in the church
+and wait for the service to finish. When the task is finsihed, the robot
+carries on with his life and the humans go away. I added some more debugging,
+most noteworthy is the debug on the screen as an overlay.</p>
 <p></p>

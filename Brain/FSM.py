@@ -12,4 +12,7 @@ class FSM:
         return self.currentState.pop()
 
     def update(self, level: Map):
-        self.currentState[len(self.currentState)-1](level)
+        if len(self.currentState) > 0:
+            self.currentState[len(self.currentState)-1](level)
+        else:
+            print("You need to add some states")

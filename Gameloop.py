@@ -53,16 +53,19 @@ class Gameloop:
         return events
 
     def preach(self):
-        self.timedEventHandler.addTimedEvent(20000, self.peopleStartComingForService)
+        self.timedEventHandler.addTimedEvent(2000, self.peopleStartComingForService)
         print("Blah blah blah")
 
     def peopleStartComingForService(self):
+        print("People start coming for service")
         task = Task(Vector2(11*self.tileSize.x, 5*self.tileSize.y), self.preach, 250, "Preach")
         self.taskList.enqueueTask(task)
         x = self.tileSize.x
         y = self.tileSize.y
+
         entranceLists = [Vector2(19*x, 5*y),
                          Vector2(19*x, 6*y)]
+
         seating = [Vector2(18*x, 1*y),
                    Vector2(18 * x, 3 * y),
                    Vector2(16 * x, 7 * y),

@@ -17,14 +17,10 @@ class TimedEvents:
         timedEvent = TimedEventParams(time+self.elapsedTime, callback)
         if len(self.eventsToCheck) > 0:
             addOnce = False
-            intermittence = []
-            for evt in self.eventsToCheck:
-                if not addOnce and evt.atWhatTime > time:
-                    intermittence.append(timedEvent)
-                intermittence.append(evt)
-            if not addOnce:
-                intermittence.append(timedEvent)
-            self.eventsToCheck = intermittence
+            for i in range(len(self.eventsToCheck)):
+                if self.eventsToCheck[i].atWhatTime > timedEvent.atWhatTime:
+                    self.eventsToCheck.insert(i, timedEvent)
+                    break
         else:
             self.eventsToCheck.append(timedEvent)
 

@@ -4,12 +4,10 @@ from random import random
 
 from pygame.math import Vector2
 
-from AStar import aStar
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
 from Collection.PointOfInterest import PointOfInterest
 from Creature import Creature
 from Map import Map
-from Node import Node
 from TaskList import TaskList, Task
 
 
@@ -31,6 +29,7 @@ class ClergyRobot(Creature):
 
         # Flags for FSM stuff
         self.foundFoodPOI: PointOfInterest = None
+        self.foundPoIIndex = -1
         self.foundBedPOI: PointOfInterest = None
 
         self.time = 0
@@ -42,7 +41,7 @@ class ClergyRobot(Creature):
     def Update(self, level: Map, dt: int):
         """Update the AI. Brain and needs"""
         self.time += dt
-        if self.time > 500:
+        if self.time > 200:
             self.time = 0
             self.needs.stepNeeds()
         self.brain.update(level)
@@ -130,6 +129,7 @@ class ClergyRobot(Creature):
         if self.needs.hunger > 100:
             self.brain.popState()
             self.foundFoodPOI = None
+            level.unuseFoodZone(self.foundPoIIndex)
         else:
             if self.foundFoodPOI is not None:
                 pos = Vector2(self.foundFoodPOI.pos.x * self.tileSize.x, self.foundFoodPOI.pos.y * self.tileSize.y)
@@ -148,6 +148,8 @@ class ClergyRobot(Creature):
         """Tired state"""
         if self.needs.sleep > 100:
             self.brain.popState()
+            self.foundBedPOI = None
+            level.unuseBedZone(self.foundPoIIndex)
         else:
             if self.foundBedPOI is not None:
                 pos = Vector2(self.foundBedPOI.pos.x * self.tileSize.x, self.foundBedPOI.pos.y * self.tileSize.y)
@@ -165,30 +167,37 @@ class ClergyRobot(Creature):
     """Hungry functions"""
 
     def findRandomFood(self, level):
-        foodLocations = level.getFoodZones(self.pos)
+        foodLocations = level.getFoodZones()
         if foodLocations is not None and len(foodLocations) > 0:
-            if len(foodLocations) == 1:
-                self.foundFoodPOI = foodLocations[0]
-            else:
-                randomFoodIndex = int(random() * len(foodLocations))
-                self.foundFoodPOI = foodLocations[randomFoodIndex]
+            self.foundPoIIndex = 0
+            if len(foodLocations) > 1:
+                self.foundPoIIndex = int(random() * len(foodLocations))
+                count = 0
+                while foodLocations[self.foundPoIIndex].isUsed and count < 100:
+                    count += 1
+                    self.foundPoIIndex = int(random() * len(foodLocations))
+                if count >= 100:
+                    self.foundPoIIndex  = -1
+            if self.foundPoIIndex >= 0:
+                self.foundFoodPOI = level.getFoodZoneAtIndex(self.foundPoIIndex)
         else:
             print("There is no bed! You will die!")
 
     def findFood(self, level):
-        foodLocations = level.getFoodZones(self.pos)
+        foodLocations = level.getFoodZones()
         if foodLocations is not None and len(foodLocations) > 0:
-            if len(foodLocations) == 1:
-                self.foundFoodPOI = foodLocations[0]
-            else:
-                closest = foodLocations[0].pos.distance_squared_to(self.pos)
-                index = 0
-                for i in range(1, len(foodLocations)):
-                    dis = foodLocations[i].pos.distance_squared_to(self.pos)
-                    if dis < closest:
-                        closest = dis
-                        index = i
-                self.foundFoodPOI = foodLocations[index]
+            self.foundPoIIndex = 0
+            if len(foodLocations) > 1:
+                closest = 9999999999
+                self.foundPoIIndex = -1
+                for i in range(0, len(foodLocations)):
+                    if not foodLocations[i].isUsed:
+                        dis = foodLocations[i].pos.distance_squared_to(self.pos)
+                        if dis < closest:
+                            closest = dis
+                            self.foundPoIIndex = i
+                if self.foundPoIIndex >= 0:
+                    self.foundFoodPOI = level.getFoodZoneAtIndex(self.foundPoIIndex)
         else:
             print("There is no food! You will die!")
 
@@ -198,30 +207,35 @@ class ClergyRobot(Creature):
     """Tired functions"""
 
     def findRandomBed(self, level):
-        bedLocations = level.getBedZones(self.pos)
+        bedLocations = level.getBedZones()
         if bedLocations is not None and len(bedLocations) > 0:
-            if len(bedLocations) == 1:
-                self.foundBedPOI = bedLocations[0]
-            else:
-                randomBedIndex = int(random() * len(bedLocations))
-                self.foundBedPOI = bedLocations[randomBedIndex]
+            self.foundPoIIndex = 0
+            if len(bedLocations) > 1:
+                self.foundPoIIndex = int(random() * len(bedLocations))
+                count = 0
+                while bedLocations[self.foundPoIIndex].isUsed and count < 100:
+                    count += 1
+                    self.foundPoIIndex = int(random() * len(bedLocations))
+
+                self.foundBedPOI = level.getBedZoneAtIndex(self.foundPoIIndex)
         else:
             print("There is no bed! You will die!")
 
     def findBed(self, level):
-        bedLocations = level.getBedZones(self.pos)
+        bedLocations = level.getBedZones()
         if bedLocations is not None and len(bedLocations) > 0:
-            if len(bedLocations) == 1:
-                self.foundBedPOI = bedLocations[0]
-            else:
-                closest = bedLocations[0].pos.distance_squared_to(self.pos)
-                index = 0
-                for i in range(1, len(bedLocations)):
-                    dis = bedLocations[i].pos.distance_squared_to(self.pos)
-                    if dis < closest:
-                        closest = dis
-                        index = i
-                self.foundBedPOI = bedLocations[index]
+            self.foundPoIIndex = 0
+            if len(bedLocations) > 1:
+                closest = 9999999999
+                self.foundPoIIndex = -1
+                for i in range(0, len(bedLocations)):
+                    if not bedLocations[i].isUsed:
+                        dis = bedLocations[i].pos.distance_squared_to(self.pos)
+                        if dis < closest:
+                            closest = dis
+                            self.foundPoIIndex = i
+                if self.foundPoIIndex >= 0:
+                    self.foundBedPOI = level.getBedZoneAtIndex(self.foundPoIIndex)
         else:
             print("There is no food! You will die!")
 

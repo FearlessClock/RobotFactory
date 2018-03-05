@@ -4,3 +4,4 @@ class PointOfInterest:
         self.name = name
         self.node = node
         self.type = type
+        self.isUsed = False

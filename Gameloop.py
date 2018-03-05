@@ -54,10 +54,8 @@ class Gameloop:
 
     def preach(self):
         self.timedEventHandler.addTimedEvent(2000, self.peopleStartComingForService)
-        print("Blah blah blah")
 
     def peopleStartComingForService(self):
-        print("People start coming for service")
         task = Task(Vector2(11*self.tileSize.x, 5*self.tileSize.y), self.preach, 250, "Preach")
         self.taskList.enqueueTask(task)
         x = self.tileSize.x
@@ -67,13 +65,36 @@ class Gameloop:
                          Vector2(19*x, 6*y)]
 
         seating = [Vector2(18*x, 1*y),
+                   Vector2(18 * x, 2 * y),
                    Vector2(18 * x, 3 * y),
-                   Vector2(16 * x, 7 * y),
+                   Vector2(18 * x, 4 * y),
+                   Vector2(18 * x, 7 * y),
+                   Vector2(18 * x, 8 * y),
                    Vector2(18 * x, 9 * y),
-                   Vector2(14 * x, 1 * y),
+                   Vector2(18 * x, 10 * y),
+
+                   Vector2(16 * x, 1 * y),
+                   Vector2(16 * x, 2 * y),
+                   Vector2(16 * x, 3 * y),
                    Vector2(16 * x, 4 * y),
-                   Vector2(18 * x, 8 * y)]
-        for chair in seating:
+                   Vector2(16 * x, 7 * y),
+                   Vector2(16 * x, 8 * y),
+                   Vector2(16 * x, 9 * y),
+                   Vector2(16 * x, 10 * y),
+
+                   Vector2(14 * x, 1 * y),
+                   Vector2(14 * x, 2 * y),
+                   Vector2(14 * x, 3 * y),
+                   Vector2(14 * x, 4 * y),
+                   Vector2(14 * x, 7 * y),
+                   Vector2(14 * x, 8 * y),
+                   Vector2(14 * x, 9 * y),
+                   Vector2(14 * x, 10 * y),
+                   ]
+        randomAmountOfHumans = int(random() * len(seating))
+        for i in range(randomAmountOfHumans):
+            chair = seating[int(random() * len(seating))]
+            seating.remove(chair)
             self.humans.append(self.humanSpawner.initCreatureAtPos(entranceLists[int(random()*2)], task, chair))
 
     def handleEvents(self):
@@ -90,7 +111,7 @@ class Gameloop:
         print("A task was just finished")
 
     def addToTimedEvent(self):
-        taskPos = self.mapHolder.getCurrentMap().getRandomEmptyNode().pos  # Vector2(6*self.tileSize.x, 15*self.tileSize.y)
+        taskPos = self.mapHolder.getCurrentMap().getRandomEmptyNode().pos
         self.taskList.enqueueTask(Task(taskPos, self.taskListEventCallback, 30, "RandomTask"))
         self.timedEventHandler.addTimedEvent(self.timedEventHandler.elapsedTime + 5000, self.addToTimedEvent)
 

@@ -1,6 +1,7 @@
 import json
 import os
 from random import random
+from typing import List
 
 import pygame
 from pygame.math import Vector2
@@ -23,13 +24,14 @@ class Map:
         # Used to show the correct blocks on screen
         self.cameraViewGroup = pygame.sprite.Group()
 
-        self.zoneOfInterest = []
-        self.beds = []
-        self.food = []
+        self.zoneOfInterest: List(PointOfInterest) = []
+        self.beds: List(PointOfInterest) = []
+        self.food: List(PointOfInterest) = []
         self.alters = []
 
         self.map, self.width, self.height = self.readMap("maps", mapName, tileLoader, "mapTiles",
-                                                         {0: False, 1: False, 2: False, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False})
+                                                         {0: False, 1: False, 2: False, 3: True, 4: False, 5: False,
+                                                          6: False, 7: False, 8: False})
         self.gridSize = Vector2(self.width, self.height)
         self.tileSize = tileSize
 
@@ -42,7 +44,6 @@ class Map:
             y = random() * self.height
             emptyNode: Node = self.getTileAt(Vector2(x, y))
         return emptyNode
-
 
     def getWidth(self):
         return self.width
@@ -93,15 +94,37 @@ class Map:
     def addBedZone(self, pos, name, node):
         self.beds.append(PointOfInterest(pos, name, node, 1))
 
-    def getBedZones(self, pos: Vector2):
+    def getBedZones(self):
         return self.beds
 
-    def getFoodZones(self, pos: Vector2):
+    def getFoodZones(self):
         return self.food
+
+    def getFoodZoneAtIndex(self, index) -> PointOfInterest:
+        if index < len(self.food):
+            self.food[index].isUsed = True
+            return self.food[index]
+        else:
+            return None
+
+    def getBedZoneAtIndex(self, index) -> PointOfInterest:
+        if index < len(self.beds):
+            self.beds[index].isUsed = True
+            return self.beds[index]
+        else:
+            return None
+
+    def unuseBedZone(self, index):
+        if index < len(self.beds):
+            self.beds[index].isUsed = False
+
+    def unuseFoodZone(self, index):
+        if index < len(self.food):
+            self.food[index].isUsed = False
 
     def getNearestFood(self, pos: Vector2):
         if len(self.food) > 0:
-            pos = Vector2(pos.x/self.tileSize.x, pos.y/self.tileSize.y)
+            pos = Vector2(pos.x / self.tileSize.x, pos.y / self.tileSize.y)
             closest = pos.distance_squared_to(self.food[0].pos)
             poi = self.food[0]
             for PoI in self.food:

@@ -131,7 +131,7 @@ class Gameloop:
             for ai in self.AICreatures:
                 ai.Update(currentMap, self.deltaTime)
 
-            npcs = [human for human in self.humans ]
+            npcs = [human for human in self.humans]
             npcs.extend(self.AICreatures)
 
             self.camera.drawScreen(self.window.screen, currentMap, self.player,
@@ -141,11 +141,12 @@ class Gameloop:
             debugInfo.extend(debugArray)
             self.camera.drawDebug(self.window.screen, debugInfo)
             self.handleEvents()
-            pygame.event.pump()
+            if pygame.display.get_init():
+                pygame.event.pump()
 
             try:
                 pygame.display.update()
             except:
-                print("Error")
+                print("Display not initialised")
 
             self.clock.tick(60)

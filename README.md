@@ -71,7 +71,8 @@ they are done.</p>
 **Points of Interest**
 <p>The design idea behind PoIs are to facilitate the designation of places
 of rest or places to eat or other important places on the map.
-This will allow the AI to easily know where to go when in need of something</p>
+This will allow the AI to easily know where to go when in need of something
+Each PoI can also be limited to 1 single person</p>
 
 **Task lists**
 <p>This is one of the more important parts of the project. The task list
@@ -124,4 +125,9 @@ and at the same time I create a few humans that will go and sit in the church
 and wait for the service to finish. When the task is finsihed, the robot
 carries on with his life and the humans go away. I added some more debugging,
 most noteworthy is the debug on the screen as an overlay.</p>
+
+<p>The Robots now will not go to the same chair/bed when they look for a
+PoI. Each PoI can be occupied and so will be used to check if someone is
+already using it</p>
+
 <p></p>

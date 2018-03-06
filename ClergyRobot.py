@@ -2,6 +2,7 @@ import math
 from builtins import int
 from random import random
 
+import pygame
 from pygame.math import Vector2
 
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
@@ -14,8 +15,8 @@ from TaskList import TaskList, Task
 class ClergyRobot(Creature):
     """"Structure to store the AI information and to make the AI move intelligently """
 
-    def __init__(self, x, y, tileLoader, tileSize, taskList: TaskList):
-        Creature.__init__(self, x, y, tileLoader, tileSize, 3)
+    def __init__(self, id, x, y, tileLoader, tileSize, taskList: TaskList):
+        Creature.__init__(self, id, x, y, tileLoader, tileSize, 3)
         self.image = tileLoader.getTileFromName("mapTiles", 3)
         self.pos: Vector2 = Vector2(x, y)
         self.path = []
@@ -38,12 +39,13 @@ class ClergyRobot(Creature):
 
         self.currentTask: Task = None
 
-    def Update(self, level: Map, dt: int):
+    def Update(self, level: Map, dt: int, movingAIGroup: pygame.sprite.Group):
         """Update the AI. Brain and needs"""
         self.time += dt
         if self.time > 200:
             self.time = 0
             self.needs.stepNeeds()
+        self.movingCreatures = movingAIGroup
         self.brain.update(level)
 
     """Brain state functions"""
@@ -54,6 +56,7 @@ class ClergyRobot(Creature):
         """Check trigger functions"""
         if len(self.taskList.listOfTasks) > 0:
             self.brain.pushState(self.taskingState)
+            self.movingTo = False
             self.movingTo = False
         elif self.needs.hunger < 30:
             self.brain.pushState(self.hungryState)

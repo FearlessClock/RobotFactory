@@ -43,8 +43,12 @@ class Gameloop:
         self.humans = []
         self.timedEventHandler.addTimedEvent(1000, self.peopleStartComingForService)
         self.nmbrOfCreatures = 5
-        self.AICreatures = [ClergyRobot(5 * self.tileSize.y, 5 * self.tileSize.y,
+        self.AICreatures = [ClergyRobot(i, random() * 8 * self.tileSize.y, random() * 8 * self.tileSize.y,
                                        self.window.tileLoader, self.tileSize, self.taskList) for i in range(self.nmbrOfCreatures)]
+        self.movingCreaturesGroup = pygame.sprite.Group()
+        self.movingCreaturesGroup.add(self.humans)
+        self.movingCreaturesGroup.add(self.AICreatures)
+
         self.timedEventHandler.addTimedEvent(10000, self.addToTimedEvent)
 
     def getInputs(self):
@@ -129,7 +133,7 @@ class Gameloop:
                         self.humans.remove(human)
                     human.update(currentMap, self.deltaTime)
             for ai in self.AICreatures:
-                ai.Update(currentMap, self.deltaTime)
+                ai.Update(currentMap, self.deltaTime, self.movingCreaturesGroup)
 
             npcs = [human for human in self.humans]
             npcs.extend(self.AICreatures)

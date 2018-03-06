@@ -7,7 +7,7 @@ from TaskList import TaskList, Task
 
 class Human(Creature):
     def __init__(self, x, y, tileLoader, tileSize, target, task):
-        Creature.__init__(self, x, y, tileLoader, tileSize, 3)
+        Creature.__init__(self, None, x, y, tileLoader, tileSize, 3)
         self.image = tileLoader.getTileFromName("mapTiles", 6)
         self.positionToGoTo: Vector2 = target
         self.lifeTask: Task = task

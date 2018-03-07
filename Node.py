@@ -6,12 +6,13 @@ from pygame.sprite import Sprite
 class Node(Sprite):
     """Node structure to represent the graph of the maze. Allows us to know a lot of information about the maze in one position"""
 
-    def __init__(self, pos: Vector2, wall: bool):
+    def __init__(self, pos: Vector2, wall: bool, weight):
         Sprite.__init__(self)
         self.rect = Rect(pos.x, pos.y, 40, 40)
         self.pos = pos
         self.floor = 0
         self.image = None
+        self.weight = weight
         self.wall = wall
         self.payload = 0
         self.neighbors = []

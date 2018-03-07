@@ -34,6 +34,7 @@ def aStar(level: Map, start: Node, goal: Node, tileSize: Vector2):
         index = 0
         best = openSet[index].f
         # Find the best node to go to next
+        # TODO Make this a priority queue
         for i in range(0, len(openSet)):
             if openSet[i].f < best:
                 best = openSet[i].f
@@ -56,7 +57,7 @@ def aStar(level: Map, start: Node, goal: Node, tileSize: Vector2):
             if not openSet.__contains__(curNeigh):
                 openSet.append(curNeigh)
 
-            tentativeGScore = current.g + 1
+            tentativeGScore = current.g + curNeigh.weight
             if curNeigh.g != -1 and tentativeGScore >= curNeigh.g:
                 continue  # It's not a better score
 

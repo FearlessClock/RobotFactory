@@ -178,7 +178,7 @@ class Map:
             for j in range(width):
                 value = int(fileRead[j])
                 isSolid = tileSignificanceDict.get(value)
-                node = Node(Vector2(j * tileLoader.tileSize.x, i * tileLoader.tileSize.y), isSolid)
+                node = Node(Vector2(j * tileLoader.tileSize.x, i * tileLoader.tileSize.y), isSolid, value)
                 node.setImage(tileLoader.getTileFromName("mapTiles", value))
                 level[i].append(node)
                 if isSolid:

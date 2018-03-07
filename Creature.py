@@ -67,12 +67,10 @@ class Creature(Sprite):
                 collision = pygame.sprite.spritecollide(self, self.movingCreatures, False, movementCollider)
 
                 if collision:
-                    print("Nmbr of collisions", len(collision))
                     pushAway = Vector2(0,0)
                     for coll in collision:
                         vec = self.pos - coll.pos
                         pushAway = pushAway + vec
-                        print(pushAway)
                     pushAway.normalize_ip()
                     self.pos += pushAway
 

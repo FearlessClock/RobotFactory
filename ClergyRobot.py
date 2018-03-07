@@ -42,7 +42,7 @@ class ClergyRobot(Creature):
     def Update(self, level: Map, dt: int, movingAIGroup: pygame.sprite.Group):
         """Update the AI. Brain and needs"""
         self.time += dt
-        if self.time > 200:
+        if self.time > 500:
             self.time = 0
             self.needs.stepNeeds()
         self.movingCreatures = movingAIGroup
@@ -61,7 +61,7 @@ class ClergyRobot(Creature):
         elif self.needs.hunger < 30:
             self.brain.pushState(self.hungryState)
             self.movingTo = False
-        elif self.needs.sleep < 40:
+        elif self.needs.tired < 40:
             self.brain.pushState(self.tiredState)
             self.movingTo = False
 
@@ -149,7 +149,7 @@ class ClergyRobot(Creature):
     def tiredState(self, level: Map):
         self.currentState = "Tired"
         """Tired state"""
-        if self.needs.sleep > 100:
+        if self.needs.tired > 100:
             self.brain.popState()
             self.foundBedPOI = None
             level.unuseBedZone(self.foundPoIIndex)
@@ -205,7 +205,7 @@ class ClergyRobot(Creature):
             print("There is no food! You will die!")
 
     def eatFood(self):
-        self.needs.hunger += 1
+        self.needs.eat(1)
 
     """Tired functions"""
 
@@ -243,4 +243,4 @@ class ClergyRobot(Creature):
             print("There is no food! You will die!")
 
     def sleep(self):
-        self.needs.sleep += 1
+        self.needs.sleep(1)

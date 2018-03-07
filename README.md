@@ -90,7 +90,7 @@ schedule tasks to run at a certain time in the game. (e.i make a Clergy
 <p>My art isn't good but it works. I made some "Real" art for the tileset
 and it makes the game look a lot better. The AI still doesn't have its
 own images but I will do that later</p>
-<img src="https://github.com/FearlessClock/RobotFactory/raw/master/images/TileSheet.png" alt="" width="300" height="300"><br>
+<img src="https://github.com/FearlessClock/RobotFactory/raw/master/images/TileSheet.png" alt="" width="150" height="150"><br>
 
 **Player**
 <p></p>

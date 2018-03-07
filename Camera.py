@@ -8,7 +8,6 @@ from pygame.rect import Rect
 from ClergyRobot import ClergyRobot
 from Map import Map
 
-
 class Camera(pygame.sprite.Group):
     """Camera class. Follow the player on the screen"""
 
@@ -111,8 +110,8 @@ class Camera(pygame.sprite.Group):
     def drawMap(self, surface_blit, tiles):
         for spr in tiles:
             rect = Rect(spr.rect.x - self.screenRect.x, spr.rect.y - self.screenRect.y, 0, 0)
-            self.spritedict[spr] = surface_blit(spr.image, rect)
-            surface_blit(self.fontRendererMedium.render(str(spr.f), False, (0, 0, 0)), rect)
+            surface_blit(spr.image, rect)
+            # surface_blit(self.fontRendererMedium.render(str(spr.f), False, (0, 0, 0)), rect)
 
 
     def drawDebug(self, surface, debugInfo):

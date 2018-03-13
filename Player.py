@@ -8,16 +8,19 @@ from pygame.sprite import Sprite
 from AStar import aStar
 from Map import Map
 from Node import Node
+from TaskList import TaskList, Task
 
 
 class Player:
     """Class handling all the user input"""
-    def __init__(self, image: pygame.Surface, screenSize: Vector2):
-        self.mousePosition = Vector2(0, 0)
+    def __init__(self, image: pygame.Surface, screenSize: Vector2, taskList: TaskList):
+        self.mousePosition: Vector2 = Vector2(0, 0)
         self.image = image
         self.rect = Rect(0, 0, image.get_width(), image.get_height())
         self.screenSize: Vector2 = screenSize
         self.path = []
+        self.taskList = taskList
+        self.button1PressedState = False
 
     def getMousePosition(self):
         return self.mousePosition
@@ -40,3 +43,12 @@ class Player:
         self.path = aStar(level,
                           level.map[int(5)][int(5)],
                           level.map[int(self.rect.y / tileSize.y)][int(self.rect.x / tileSize.x)], tileSize)
+
+        if pygame.mouse.get_pressed()[0] and not self.button1PressedState:
+            self.button1PressedState = True
+            self.taskList.enqueueTask(Task(self.mousePosition, self.mouseClick, 200))
+        elif not pygame.mouse.get_pressed()[0] and self.button1PressedState:
+            self.button1PressedState = False
+
+    def mouseClick(self):
+        print("Button click task completed")

@@ -27,9 +27,6 @@ class Gameloop:
         self.camera = Camera(Vector2(20, 20), self.tileSize, self.screenSize)
         self.mapHolder = MapHolder(["Church"], self.tileSize, self.window.tileLoader)
 
-        # Init the player class
-        playerImage = self.window.tileLoader.getImageByName("player", 0, 0)
-        self.player = Player(playerImage, self.screenSize)
 
         # Timing and delta time stuff
         self.clock = pygame.time.Clock()
@@ -37,6 +34,10 @@ class Gameloop:
 
         self.taskList = TaskList()
         self.timedEventHandler = TimedEvents()
+
+        # Init the player class
+        playerImage = self.window.tileLoader.getImageByName("player", 0, 0)
+        self.player = Player(playerImage, self.screenSize, self.taskList)
 
         self.humanSpawner = HumanFactory(self.mapHolder.getCurrentMap().gridSize,
                                          self.window.tileLoader, self.tileSize)

@@ -42,8 +42,8 @@ class Gameloop:
         self.humanSpawner = HumanFactory(self.mapHolder.getCurrentMap().gridSize,
                                          self.window.tileLoader, self.tileSize)
         self.humans = []
-        self.timedEventHandler.addTimedEvent(1000, self.peopleStartComingForService)
-        self.nmbrOfCreatures = 5
+        #self.timedEventHandler.addTimedEvent(1000, self.peopleStartComingForService)
+        self.nmbrOfCreatures = 1
         self.AICreatures = [ClergyRobot(i, random() * 8 * self.tileSize.y, random() * 8 * self.tileSize.y,
                                        self.window.tileLoader, self.tileSize, self.taskList) for i in range(self.nmbrOfCreatures)]
         self.movingCreaturesGroup = pygame.sprite.Group()

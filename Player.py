@@ -38,7 +38,7 @@ class Player:
         self.rect.x = self.mousePosition.x
         self.rect.y = self.mousePosition.y
 
-    def updateMouse(self, level, tileSize):
+    def updateMouse(self, level: Map, tileSize):
         self.updateMousePosition()
         self.path = aStar(level,
                           level.map[int(5)][int(5)],
@@ -46,7 +46,13 @@ class Player:
 
         if pygame.mouse.get_pressed()[0] and not self.button1PressedState:
             self.button1PressedState = True
-            self.taskList.enqueueTask(Task(self.mousePosition, self.mouseClick, 200))
+            taskPosition = Vector2(self.mousePosition)
+            taskPosition.x = (taskPosition.x // tileSize.x)
+            taskPosition.y = (taskPosition.y // tileSize.y)
+            if not level.getTileAt(taskPosition).isSolid():
+                taskPosition.x *= tileSize.x
+                taskPosition.y *= tileSize.y
+                self.taskList.enqueueTask(Task(taskPosition, self.mouseClick, 100, "Player Move to"))
         elif not pygame.mouse.get_pressed()[0] and self.button1PressedState:
             self.button1PressedState = False
 

@@ -67,7 +67,7 @@ class Camera(pygame.sprite.Group):
             rect = Rect(player.rect)
             rect.x -= self.screenRect.x
             rect.y -= self.screenRect.y
-            surface_blit(player.image, rect)
+            player.drawAt(rect, surface)
             pointList = []
             for i in range(len(player.path) - 1, 0, -1):
                 pointList.append([player.path[i].rect.x + self.tileSize.x / 2, player.path[i].rect.y + self.tileSize.y / 2])

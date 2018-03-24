@@ -37,7 +37,7 @@ class Gameloop:
 
         # Init the player class
         playerImage = self.window.tileLoader.getImageByName("player", 0, 0)
-        self.player = Player(playerImage, self.screenSize, self.taskList)
+        self.player = Player(playerImage, self.screenSize, self.taskList, self.tileSize)
 
         self.humanSpawner = HumanFactory(self.mapHolder.getCurrentMap().gridSize,
                                          self.window.tileLoader, self.tileSize)
@@ -69,33 +69,16 @@ class Gameloop:
         entranceLists = [Vector2(19*x, 5*y),
                          Vector2(19*x, 6*y)]
 
-        seating = [Vector2(18*x, 1*y),
-                   Vector2(18 * x, 2 * y),
-                   Vector2(18 * x, 3 * y),
-                   Vector2(18 * x, 4 * y),
-                   Vector2(18 * x, 7 * y),
-                   Vector2(18 * x, 8 * y),
-                   Vector2(18 * x, 9 * y),
-                   Vector2(18 * x, 10 * y),
+        seating = [Vector2(18*x, 1*y),Vector2(18 * x, 2 * y),Vector2(18 * x, 3 * y),Vector2(18 * x, 4 * y),
+                   Vector2(18 * x, 7 * y),Vector2(18 * x, 8 * y),Vector2(18 * x, 9 * y),Vector2(18 * x, 10 * y),
 
-                   Vector2(16 * x, 1 * y),
-                   Vector2(16 * x, 2 * y),
-                   Vector2(16 * x, 3 * y),
-                   Vector2(16 * x, 4 * y),
-                   Vector2(16 * x, 7 * y),
-                   Vector2(16 * x, 8 * y),
-                   Vector2(16 * x, 9 * y),
-                   Vector2(16 * x, 10 * y),
+                   Vector2(16 * x, 1 * y),Vector2(16 * x, 2 * y),Vector2(16 * x, 3 * y),Vector2(16 * x, 4 * y),
+                   Vector2(16 * x, 7 * y),Vector2(16 * x, 8 * y),Vector2(16 * x, 9 * y),Vector2(16 * x, 10 * y),
 
-                   Vector2(14 * x, 1 * y),
-                   Vector2(14 * x, 2 * y),
-                   Vector2(14 * x, 3 * y),
-                   Vector2(14 * x, 4 * y),
-                   Vector2(14 * x, 7 * y),
-                   Vector2(14 * x, 8 * y),
-                   Vector2(14 * x, 9 * y),
-                   Vector2(14 * x, 10 * y),
+                   Vector2(14 * x, 1 * y),Vector2(14 * x, 2 * y),Vector2(14 * x, 3 * y),Vector2(14 * x, 4 * y),
+                   Vector2(14 * x, 7 * y),Vector2(14 * x, 8 * y),Vector2(14 * x, 9 * y),Vector2(14 * x, 10 * y),
                    ]
+
         randomAmountOfHumans = int(random() * len(seating))
         for i in range(randomAmountOfHumans):
             chair = seating[int(random() * len(seating))]
@@ -127,7 +110,7 @@ class Gameloop:
             currentMap = self.mapHolder.getCurrentMap()
             self.deltaTime = self.clock.get_time()
             self.timedEventHandler.updateTimer(self.deltaTime)
-            self.player.updateMouse(currentMap, self.tileSize)
+            self.player.updateMouse(currentMap)
             if len(self.humans) > 0:
                 for human in self.humans:
                     if not human.alive:

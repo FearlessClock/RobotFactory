@@ -13,7 +13,7 @@ from TaskList import TaskList, Task
 
 class Player:
     """Class handling all the user input"""
-    def __init__(self, image: pygame.Surface, screenSize: Vector2, taskList: TaskList):
+    def __init__(self, image: pygame.Surface, screenSize: Vector2, taskList: TaskList, tilesize):
         self.mousePosition: Vector2 = Vector2(0, 0)
         self.image = image
         self.rect = Rect(0, 0, image.get_width(), image.get_height())
@@ -21,6 +21,11 @@ class Player:
         self.path = []
         self.taskList = taskList
         self.button1PressedState = False
+        self.tilesize = tilesize
+
+        # Menu stuff
+        self.menuSpawned = False
+        self.menuPosition = Vector2(0, 0)
 
     def getMousePosition(self):
         return self.mousePosition
@@ -38,23 +43,41 @@ class Player:
         self.rect.x = self.mousePosition.x
         self.rect.y = self.mousePosition.y
 
-    def updateMouse(self, level: Map, tileSize):
+    def updateMouse(self, level: Map):
         self.updateMousePosition()
         self.path = aStar(level,
                           level.map[int(5)][int(5)],
-                          level.map[int(self.rect.y / tileSize.y)][int(self.rect.x / tileSize.x)], tileSize)
+                          level.map[int(self.rect.y / self.tilesize.y)][int(self.rect.x / self.tilesize.x)],
+                          self.tilesize)
 
         if pygame.mouse.get_pressed()[0] and not self.button1PressedState:
+            # Create a menu from where the player can chose what they want to do
+            # On mouse click
+            # Spawn menu if it isn't already spawned
+            # Close menu if it isn't spawned
             self.button1PressedState = True
-            taskPosition = Vector2(self.mousePosition)
-            taskPosition.x = (taskPosition.x // tileSize.x)
-            taskPosition.y = (taskPosition.y // tileSize.y)
-            if not level.getTileAt(taskPosition).isSolid():
-                taskPosition.x *= tileSize.x
-                taskPosition.y *= tileSize.y
-                self.taskList.enqueueTask(Task(taskPosition, self.mouseClick, 100, "Player Move to"))
+            clickPosition = Vector2(self.mousePosition)
+            clickPosition.x = (clickPosition.x / self.tilesize.x)
+            clickPosition.y = (clickPosition.y / self.tilesize.y)
+            self.spawnMenu(clickPosition)
         elif not pygame.mouse.get_pressed()[0] and self.button1PressedState:
             self.button1PressedState = False
 
     def mouseClick(self):
         print("Button click task completed")
+
+    def spawnMenu(self, clickPos):
+        if not self.menuSpawned:
+            self.menuPosition = clickPos
+            self.menuSpawned = True
+        else:
+            self.menuSpawned = False
+
+    def drawAt(self, rect, surface):
+        if self.menuSpawned:
+            pygame.draw.rect(surface, (0, 255, 0), Rect(self.menuPosition.x*self.tilesize.x, self.menuPosition.y*self.tilesize.y, 100, 100))
+            pygame.draw.rect(surface, (255, 0, 0), Rect(self.menuPosition.x*self.tilesize.x+10, self.menuPosition.y*self.tilesize.y+10, 80, 20))
+            pygame.draw.rect(surface, (0, 255, 255), Rect(self.menuPosition.x*self.tilesize.x+10, self.menuPosition.y*self.tilesize.y+40, 80, 20))
+            pygame.draw.rect(surface, (0, 0, 255), Rect(self.menuPosition.x*self.tilesize.x+10, self.menuPosition.y*self.tilesize.y+70, 80, 20))
+
+        surface.blit(self.image, rect)

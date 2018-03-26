@@ -26,7 +26,7 @@ class Player:
         # Menu stuff
         self.menuSpawned = False
         self.menuPosition = Vector2(0, 0)
-        self.buttonContainer = Container(Vector2(0, 0))
+        self.buttonContainer = Container(Vector2(0, 0), Vector2(100, 100))
         self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0)))
         self.buttonContainer.addButton(Button(Rect(10, 40, 80, 20), (255, 0, 0)))
         self.buttonContainer.addButton(Button(Rect(10, 70, 80, 20), (255, 0, 0)))
@@ -74,17 +74,18 @@ class Player:
     def spawnMenu(self, gridPos, screenPos):
         if not self.menuSpawned:
             self.menuPosition = gridPos
+            self.buttonContainer.position = screenPos
             self.menuSpawned = True
         else:
-            if self.menuPosition.x + 100 > gridPos.x > self.menuPosition.x and self.menuPosition.y + 100 > gridPos.y > self.menuPosition.y:
+            print(gridPos, self.menuPosition)
+            if (self.buttonContainer.position.x + self.buttonContainer.size.x > screenPos.x > self.buttonContainer.position.x and
+                self.buttonContainer.position.y + self.buttonContainer.size.y > screenPos.y > self.buttonContainer.position.y):
                 self.buttonContainer.getButtonPressed(screenPos)
             else:
                 self.menuSpawned = False
 
     def drawAt(self, rect, surface):
         if self.menuSpawned:
-            screenRef = Vector2(self.menuPosition.x * self.tilesize.x, self.menuPosition.y * self.tilesize.y)
-            self.buttonContainer.position = screenRef
             self.buttonContainer.drawContainer(surface)
 
         surface.blit(self.image, rect)

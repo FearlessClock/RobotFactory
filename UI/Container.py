@@ -1,9 +1,13 @@
 import pygame
+from pygame.math import Vector2
 from pygame.rect import Rect
 
 
 class Container:
-    def __init__(self, position):
+    """ Position in screen space
+        menuSize in screen space"""
+    def __init__(self, position: Vector2, menuSize: Vector2):
+        self.size = menuSize
         self.position = position
         self.buttons = []
 
@@ -12,7 +16,7 @@ class Container:
         self.buttons.append(button);
 
     def drawContainer(self, surface):
-        pygame.draw.rect(surface, (0, 255, 0), Rect(self.position.x, self.position.y, 100, 100))
+        pygame.draw.rect(surface, (0, 255, 0), Rect(self.position.x, self.position.y, self.size.x, self.size.y))
         for i in range(len(self.buttons)):
             self.buttons[i].draw(surface, self.position)
 

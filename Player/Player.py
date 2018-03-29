@@ -27,9 +27,9 @@ class Player:
         self.menuSpawned = False
         self.menuPosition = Vector2(0, 0)
         self.buttonContainer = Container(Vector2(0, 0), Vector2(100, 100))
-        self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0)))
-        self.buttonContainer.addButton(Button(Rect(10, 40, 80, 20), (255, 0, 0)))
-        self.buttonContainer.addButton(Button(Rect(10, 70, 80, 20), (255, 0, 0)))
+        self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0), "Button 1", None))
+        self.buttonContainer.addButton(Button(Rect(10, 40, 80, 20), (255, 0, 0), "Button 2", None))
+        self.buttonContainer.addButton(Button(Rect(10, 70, 80, 20), (255, 0, 0), "Button 3", None))
 
     def getMousePosition(self):
         return self.mousePosition
@@ -49,10 +49,10 @@ class Player:
 
     def updateMouse(self, level: Map):
         self.updateMousePosition()
-        self.path = aStar(level,
-                          level.map[int(5)][int(5)],
-                          level.map[int(self.rect.y / self.tilesize.y)][int(self.rect.x / self.tilesize.x)],
-                          self.tilesize)
+        # self.path = aStar(level,
+        #                   level.map[int(5)][int(5)],
+        #                   level.map[int(self.rect.y / self.tilesize.y)][int(self.rect.x / self.tilesize.x)],
+        #                   self.tilesize)
 
         if pygame.mouse.get_pressed()[0] and not self.button1PressedState:
             # Create a menu from where the player can chose what they want to do
@@ -64,28 +64,30 @@ class Player:
             clickPosition = Vector2()
             clickPosition.x = (screenPosition.x / self.tilesize.x)
             clickPosition.y = (screenPosition.y / self.tilesize.y)
-            self.spawnMenu(clickPosition, screenPosition)
+            self.spawnMenu(clickPosition, screenPosition, level.getTileAt(clickPosition).userActions)
         elif not pygame.mouse.get_pressed()[0] and self.button1PressedState:
             self.button1PressedState = False
 
     def mouseClick(self):
         print("Button click task completed")
 
-    def spawnMenu(self, gridPos, screenPos):
+    def spawnMenu(self, gridPos, screenPos, actions):
         if not self.menuSpawned:
             self.menuPosition = gridPos
             self.buttonContainer.position = screenPos
+            self.buttonContainer.buttons.clear()
+            for action in actions:
+                self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0), action.getName(), action.getCallback()))
             self.menuSpawned = True
         else:
-            print(gridPos, self.menuPosition)
             if (self.buttonContainer.position.x + self.buttonContainer.size.x > screenPos.x > self.buttonContainer.position.x and
-                self.buttonContainer.position.y + self.buttonContainer.size.y > screenPos.y > self.buttonContainer.position.y):
+                    self.buttonContainer.position.y + self.buttonContainer.size.y > screenPos.y > self.buttonContainer.position.y):
                 self.buttonContainer.getButtonPressed(screenPos)
             else:
                 self.menuSpawned = False
 
-    def drawAt(self, rect, surface):
+    def drawAt(self, rect, surface, fontRenderer):
         if self.menuSpawned:
-            self.buttonContainer.drawContainer(surface)
+            self.buttonContainer.drawContainer(surface, fontRenderer)
 
         surface.blit(self.image, rect)

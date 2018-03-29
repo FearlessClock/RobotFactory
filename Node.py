@@ -1,6 +1,10 @@
+from typing import List
+
 from pygame.math import Vector2
 from pygame.rect import Rect
 from pygame.sprite import Sprite
+
+from Player.UserAction import UserAction
 
 
 class Node(Sprite):
@@ -19,6 +23,12 @@ class Node(Sprite):
         self.parent = None
         self.g = -1
         self.f = -1
+
+        # User actions associated with this position
+        self.userActions: List(UserAction) = []
+
+    def addUserAction(self, action: UserAction):
+        self.userActions.append(action)
 
     def setImage(self, Image):
         self.image = Image

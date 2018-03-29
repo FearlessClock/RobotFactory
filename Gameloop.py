@@ -8,7 +8,7 @@ from Camera import Camera
 from ClergyRobot import ClergyRobot
 from Human import Human
 from MapHolder import MapHolder
-from Player import Player
+from Player.Player import Player
 from HumanFactory import HumanFactory
 from TaskList import TaskList, Task
 from TimedEvents import TimedEvents

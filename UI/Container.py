@@ -15,13 +15,13 @@ class Container:
     def addButton(self, button):
         self.buttons.append(button);
 
-    def drawContainer(self, surface):
+    def drawContainer(self, surface, fontRenderer):
         pygame.draw.rect(surface, (0, 255, 0), Rect(self.position.x, self.position.y, self.size.x, self.size.y))
         for i in range(len(self.buttons)):
-            self.buttons[i].draw(surface, self.position)
+            self.buttons[i].draw(surface, self.position, fontRenderer)
 
     def getButtonPressed(self, clickPos):
         relativePos = clickPos - self.position
         for button in self.buttons:
             if button.rect.x < relativePos.x < button.rect.topright[0] and button.rect.y < relativePos.y < button.rect.bottomright[1]:
-                print("Clicked button")
+                button.click()

@@ -67,12 +67,12 @@ class Camera(pygame.sprite.Group):
             rect = Rect(player.rect)
             rect.x -= self.screenRect.x
             rect.y -= self.screenRect.y
-            player.drawAt(rect, surface)
-            pointList = []
-            for i in range(len(player.path) - 1, 0, -1):
-                pointList.append([player.path[i].rect.x + self.tileSize.x / 2, player.path[i].rect.y + self.tileSize.y / 2])
-            if len(pointList) > 1:
-                pygame.draw.lines(surface, (100,100,100), False, pointList, 5)
+            player.drawAt(rect, surface, self.fontRendererMedium)
+            # pointList = []
+            # for i in range(len(player.path) - 1, 0, -1):
+            #     pointList.append([player.path[i].rect.x + self.tileSize.x / 2, player.path[i].rect.y + self.tileSize.y / 2])
+            # if len(pointList) > 1:
+            #     pygame.draw.lines(surface, (100,100,100), False, pointList, 5)
 
         # Draw debug info to screen
         rect.x = 0
@@ -112,7 +112,10 @@ class Camera(pygame.sprite.Group):
         for spr in tiles:
             rect = Rect(spr.rect.x - self.screenRect.x, spr.rect.y - self.screenRect.y, 0, 0)
             self.spritedict[spr] = surface_blit(spr.image, rect)
-            surface_blit(self.fontRendererMedium.render(str(spr.f), False, (0, 0, 0)), rect)
+            surface_blit(self.fontRendererSmall.render(str(spr.f), False, (0, 0, 0)), rect)
+            for action in spr.userActions:
+                rect.move_ip(0, 10)
+                surface_blit(self.fontRendererSmall.render(str(action), False, (0, 0, 0)), rect)
 
 
     def drawDebug(self, surface, debugInfo):

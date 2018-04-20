@@ -130,4 +130,8 @@ most noteworthy is the debug on the screen as an overlay.</p>
 PoI. Each PoI can be occupied and so will be used to check if someone is
 already using it</p>
 
+<p>I am stuck. I don't know what I want the player actions to be...  The
+player has to have some kind of interaction with the world but I don't
+know what to put in. </p>
+
 <p></p>

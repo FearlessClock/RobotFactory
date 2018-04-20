@@ -1,12 +1,15 @@
 import math
 
 from pygame.math import Vector2
+import heapq
 
 from Map import Map
 from Node import Node
 
+from timeit import default_timer as timer
 
 def aStar(level: Map, start: Node, goal: Node, tileSize: Vector2):
+    # startTimer = timer()
     if goal.isSolid():
         print("You can't go here, it is solid")
         return []
@@ -22,40 +25,36 @@ def aStar(level: Map, start: Node, goal: Node, tileSize: Vector2):
             level.map[i][j].floor = 0
 
     # Already visited nodes
-    closedSet = []
+    closedSet = set()
 
     start.g = 0
     start.f = 0  # getManhattenDistance(start, goal)
 
-    # Possible nodes to visit
-    openSet = [start]
+    # Possible nodes to visit, Priority queue
+    openHeap = []
+    openComparer = set()
+    heapq.heappush(openHeap, (0, start))
+    openComparer.add(start)
 
-    while len(openSet) > 0:
-        index = 0
-        best = openSet[index].f
+    while len(openHeap) > 0:
         # Find the best node to go to next
-        # TODO Make this a priority queue
-        for i in range(0, len(openSet)):
-            if openSet[i].f < best:
-                best = openSet[i].f
-                index = i
-        current = openSet.pop(index)
+        current = heapq.heappop(openHeap)[1]
 
         # When the algo reaches the goal, quit
         if current.equal(goal):
+            # endTimer = timer()
+            # print("Time taken", endTimer - startTimer)
             return reconstructPath(current)
 
-        closedSet.append(current)
+        openComparer.remove(current)
+        closedSet.add(current)
 
         neighs = current.getNeighbors()
         # For each neighbor, check if it is an interesting candidate
         for i in range(0, len(neighs)):
             curNeigh = neighs[i]
-            if closedSet.__contains__(curNeigh):
+            if curNeigh in closedSet:
                 continue
-
-            if not openSet.__contains__(curNeigh):
-                openSet.append(curNeigh)
 
             tentativeGScore = current.g + curNeigh.weight
             if curNeigh.g != -1 and tentativeGScore >= curNeigh.g:
@@ -65,6 +64,12 @@ def aStar(level: Map, start: Node, goal: Node, tileSize: Vector2):
             curNeigh.g = tentativeGScore
             curNeigh.f = curNeigh.g + GetHScore(curNeigh, goal, tileSize)
             curNeigh.floor = 255
+
+            if curNeigh not in openComparer:
+                openComparer.add(curNeigh)
+                heapq.heappush(openHeap, (curNeigh.f, curNeigh))
+
+
 
     print("Error No path found")
     return []

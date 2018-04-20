@@ -8,7 +8,6 @@ from pygame.rect import Rect
 from ClergyRobot import ClergyRobot
 from Map import Map
 
-
 class Camera(pygame.sprite.Group):
     """Camera class. Follow the player on the screen"""
 

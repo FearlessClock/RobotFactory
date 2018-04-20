@@ -56,3 +56,24 @@ class Node(Sprite):
 
     def isSolid(self):
         return self.wall
+
+    def __lt__(self, other):
+        if self.f < other.f:
+            return True
+        else:
+            return False
+
+    def __hash__(self):
+        return hash((self.pos.x, self.pos.y))
+
+    def __eq__(self, o) -> bool:
+        if self.pos == o.pos:
+            return True
+        else:
+            return False
+
+
+
+
+
+

@@ -134,4 +134,7 @@ already using it</p>
 player has to have some kind of interaction with the world but I don't
 know what to put in. </p>
 
-<p></p>
+<p>Have the robots covert the humans to the faith. The robots have skills
+that allow them to be able to better covert the humans. More converted humans means
+more funds from the tithes, more tithes means more money to buy food (?), more
+food means better performing robots means more humans. </p>

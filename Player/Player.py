@@ -55,7 +55,7 @@ class Player:
             # Create a menu from where the player can chose what they want to do
             # On mouse click
             # Spawn menu if it isn't already spawned
-            # Close menu if it isn't spawned
+            # Close menu if it is spawned
             self.button1PressedState = True
             screenPosition = Vector2(self.mousePosition)
             clickPosition = Vector2()
@@ -73,13 +73,17 @@ class Player:
             self.menuPosition = gridPos
             self.buttonContainer.position = screenPos
             self.buttonContainer.buttons.clear()
+            x = 10
+            y = 10
             for action in actions:
-                self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0), action.getName(), lambda: self.taskList.enqueueTask(action.getTask())))
+                self.buttonContainer.addButton(Button(Rect(x, y, 80, 20), (255, 0, 0), action.getName(), lambda: self.taskList.enqueueTask(action.getTask())))
+                y += 30
             self.menuSpawned = True
         else:
             if (self.buttonContainer.position.x + self.buttonContainer.size.x > screenPos.x > self.buttonContainer.position.x and
                     self.buttonContainer.position.y + self.buttonContainer.size.y > screenPos.y > self.buttonContainer.position.y):
-                self.buttonContainer.getButtonPressed(screenPos)
+                if self.buttonContainer.getButtonPressed(screenPos):
+                    self.menuSpawned = False
             else:
                 self.menuSpawned = False
 

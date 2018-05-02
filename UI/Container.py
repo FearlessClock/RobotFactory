@@ -27,3 +27,5 @@ class Container:
         for button in self.buttons:
             if button.rect.x < relativePos.x < button.rect.topright[0] and button.rect.y < relativePos.y < button.rect.bottomright[1]:
                 button.click()
+                return True
+        return False

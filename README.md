@@ -138,3 +138,22 @@ know what to put in. </p>
 that allow them to be able to better covert the humans. More converted humans means
 more funds from the tithes, more tithes means more money to buy food (?), more
 food means better performing robots means more humans. </p>
+
+<p>When a human comes in to a service, he can be saved or not. If he is saved,
+when asked to do it, he can give tithes. If he isn't saved, he needs to be
+convinced to join the cult. This is done by having the robots having certain
+skills in convincing people to join. If he is good enough, the human might join,
+if not he will just leave again.</p>
+
+<p> To start doing this, I am just going to give the robots a convincing
+skill and the humans will get a stubbornness rating. Convincing > stubbornness
+and the person is converted</p>
+
+<p> This took a lot more work to implement then I had initially thought.
+The Humans didn't have their own tasks really and only kind of followed
+the Robot assigned tasks. So when the robot was finished, the human was finished.
+I have now changed it to give the humans a wait task. This consists of
+having an existing task being followed by another task. When the existing task
+finishes, the other task can react on it. I can now have different information
+stored in it for the different agents. This allowed me to have skills (New feature
+to allow the agents to be more unique) requirements in each task.</p>

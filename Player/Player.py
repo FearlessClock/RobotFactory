@@ -27,9 +27,6 @@ class Player:
         self.menuSpawned = False
         self.menuPosition = Vector2(0, 0)
         self.buttonContainer = Container(Vector2(0, 0), Vector2(100, 100))
-        self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0), "Button 1", None))
-        self.buttonContainer.addButton(Button(Rect(10, 40, 80, 20), (255, 0, 0), "Button 2", None))
-        self.buttonContainer.addButton(Button(Rect(10, 70, 80, 20), (255, 0, 0), "Button 3", None))
 
     def getMousePosition(self):
         return self.mousePosition
@@ -77,7 +74,7 @@ class Player:
             self.buttonContainer.position = screenPos
             self.buttonContainer.buttons.clear()
             for action in actions:
-                self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0), action.getName(), action.getCallback()))
+                self.buttonContainer.addButton(Button(Rect(10, 10, 80, 20), (255, 0, 0), action.getName(), lambda: self.taskList.enqueueTask(action.getTask())))
             self.menuSpawned = True
         else:
             if (self.buttonContainer.position.x + self.buttonContainer.size.x > screenPos.x > self.buttonContainer.position.x and

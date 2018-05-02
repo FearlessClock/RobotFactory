@@ -6,6 +6,7 @@ import pygame
 from pygame.math import Vector2
 
 from ClergyRobotClasses.ClergyRobotNeeds import Needs
+from ClergyRobotClasses.ClergyRobotSkills import ClergyRobotSkills
 from Collection.PointOfInterest import PointOfInterest
 from Creature import Creature
 from Map import Map
@@ -28,6 +29,9 @@ class ClergyRobot(Creature):
         self.needs = Needs()
         self.brain.pushState(self.roaming)
 
+        #Creature skills. Used to calculate how good a creature is at something
+        self.skills = ClergyRobotSkills()
+
         # Flags for FSM stuff
         self.foundFoodPOI: PointOfInterest = None
         self.foundPoIIndex = -1
@@ -38,6 +42,8 @@ class ClergyRobot(Creature):
         self.taskList = taskList
 
         self.currentTask: Task = None
+
+        self.converted = True # Can be romoved, just to debug humans
 
     def Update(self, level: Map, dt: int, movingAIGroup: pygame.sprite.Group):
         """Update the AI. Brain and needs"""
@@ -110,7 +116,7 @@ class ClergyRobot(Creature):
                 if len(self.taskList.listOfTasks) > 0:
                     self.currentTask = self.taskList.dequeueTask()
 
-            """If the task is not set, don't do anything"""
+            """If the task is set"""
             if self.currentTask is not None:
                 # Go to the task
                 disToTask = self.pos.distance_to(self.currentTask.placeToGo)
@@ -121,9 +127,8 @@ class ClergyRobot(Creature):
                     self.moveToNode(level, self.roamNode)
                 else:
                     # if there, do the task
-                    self.currentTask.workOnTask(1)
-                    if self.currentTask.taskFinished:
-                        print("Task done")
+                    self.currentTask.workOnTask(1, self.skills)
+                    if self.currentTask.taskFinishedFlag:
                         self.currentTask = None
 
     def hungryState(self, level):

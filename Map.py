@@ -180,8 +180,6 @@ class Map:
                 value = int(fileRead[j])
                 isSolid = tileSignificanceDict.get(value)
                 node = Node(Vector2(j * tileLoader.tileSize.x, i * tileLoader.tileSize.y), isSolid, value)
-                if random() > 0.5:
-                    node.addUserAction(UserAction("Something", self.callback))
                 node.setImage(tileLoader.getTileFromName("mapTiles", value))
                 level[i].append(node)
                 if isSolid:
@@ -220,6 +218,3 @@ class Map:
 
     def draw(self, surface):
         self.cameraViewGroup.draw(surface)
-
-    def callback(self):
-        print("this is a callback")

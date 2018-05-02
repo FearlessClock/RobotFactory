@@ -1,11 +1,9 @@
 import os
-from typing import List
 
 import pygame
 from pygame.math import Vector2
 from pygame.rect import Rect
 
-from ClergyRobot import ClergyRobot
 from Map import Map
 
 class Camera(pygame.sprite.Group):
@@ -85,7 +83,7 @@ class Camera(pygame.sprite.Group):
             for npc in AI:
                 rect = Rect(npc.rect.x - self.screenRect.x, npc.rect.y - self.screenRect.y, 0, 0)
                 surface_blit(npc.image, rect)
-                # surface_blit(self.fontRendererSmall.render("H:" + str(npc.needs.hunger), False, (0, 0, 0)), rect)
+                surface_blit(self.fontRendererSmall.render("C:" + str(npc.converted), False, (0, 0, 0)), rect)
                 # # rect.y += self.fontRendererMedium.size("P")[1]
                 # # surface_blit(self.fontRendererMedium.render(str(npc.needs.thirst), False, (0, 0, 0)), rect)
                 # rect.y += self.fontRendererSmall.size("P")[1]

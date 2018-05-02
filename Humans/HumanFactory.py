@@ -2,7 +2,7 @@ from random import random
 
 from pygame.math import Vector2
 
-from Human import Human
+from Humans.Human import Human
 
 
 class HumanFactory:
@@ -18,5 +18,5 @@ class HumanFactory:
                             int(random() * self.gridSize.y) * self.tileSize.y)
         return Human(x, y, self.tileLoader, self.tileSize, targetPos, task)
 
-    def initCreatureAtPos(self, pos, task, target):
-        return Human(pos.x, pos.y, self.tileLoader, self.tileSize, target, task)
+    def initCreatureAtPos(self, pos, task):
+        return Human(pos.x, pos.y, self.tileLoader, self.tileSize, task)

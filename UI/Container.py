@@ -2,6 +2,8 @@ import pygame
 from pygame.math import Vector2
 from pygame.rect import Rect
 
+from UI.Button import Button
+
 
 class Container:
     """ Position in screen space
@@ -12,7 +14,7 @@ class Container:
         self.buttons = []
 
     """Buttons in the list have to be placed in relation to the container and not the screen"""
-    def addButton(self, button):
+    def addButton(self, button: Button):
         self.buttons.append(button);
 
     def drawContainer(self, surface, fontRenderer):

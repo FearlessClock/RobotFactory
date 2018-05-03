@@ -48,7 +48,7 @@ class Creature(Sprite):
             self.movingTo = True
             self.path = []
             self.path = aStar(level,
-                              level.map[int(self.pos.y / self.tileSize.y)][int(self.pos.x / self.tileSize.x)],
+                              level.map[int((self.pos.y+self.tileSize.y/2) / self.tileSize.y)][int((self.pos.x+self.tileSize.y/2) / self.tileSize.x)],
                               goal, self.tileSize)
             if len(self.path) > 0:
                 self.movingTo = True
